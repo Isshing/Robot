@@ -144,7 +144,7 @@ void StartDefaultTask(void const * argument)
 		HAL_UART_Transmit(&huart6, (uint8_t *)buffer7, strlen(buffer7), 999);
     osDelay(100);
 		
-		CAN_cmd_chassis(500, 500, 500, 500);
+		//CAN_cmd_chassis(500, 500, 500, 500);
 		
 		
 		
