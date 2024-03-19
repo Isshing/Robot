@@ -1,7 +1,7 @@
 birth2\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/croutine.c
 birth2\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-birth2\croutine.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
-birth2\croutine.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
+birth2\croutine.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
+birth2\croutine.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
 birth2\croutine.o: ../Core/Inc/FreeRTOSConfig.h
 birth2\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 birth2\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h

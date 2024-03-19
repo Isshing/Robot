@@ -1,8 +1,8 @@
 birth2\list.o: ../Middlewares/Third_Party/FreeRTOS/Source/list.c
-birth2\list.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdlib.h
+birth2\list.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stdlib.h
 birth2\list.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-birth2\list.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
-birth2\list.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
+birth2\list.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
+birth2\list.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
 birth2\list.o: ../Core/Inc/FreeRTOSConfig.h
 birth2\list.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 birth2\list.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h

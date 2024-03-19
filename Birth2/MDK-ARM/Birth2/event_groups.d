@@ -1,8 +1,8 @@
 birth2\event_groups.o: ../Middlewares/Third_Party/FreeRTOS/Source/event_groups.c
-birth2\event_groups.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdlib.h
+birth2\event_groups.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stdlib.h
 birth2\event_groups.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-birth2\event_groups.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
-birth2\event_groups.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
+birth2\event_groups.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
+birth2\event_groups.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
 birth2\event_groups.o: ../Core/Inc/FreeRTOSConfig.h
 birth2\event_groups.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 birth2\event_groups.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
