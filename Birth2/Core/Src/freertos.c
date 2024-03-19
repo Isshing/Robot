@@ -58,6 +58,7 @@ extern UART_HandleTypeDef huart7;
 extern UART_HandleTypeDef huart6;
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
+osThreadId PID_ControlHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -65,6 +66,7 @@ osThreadId defaultTaskHandle;
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void const * argument);
+void StartTask02(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -115,6 +117,10 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
+  /* definition and creation of PID_Control */
+  osThreadDef(PID_Control, StartTask02, osPriorityIdle, 0, 128);
+  PID_ControlHandle = osThreadCreate(osThread(PID_Control), NULL);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -134,14 +140,16 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-		char buffer8[32];
-		char buffer7[32];
-		sprintf(buffer8, "%lu\r\n", TOF_distance8); 
-		HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)"TOFuart8:", (uint16_t)strlen("TOFuart8:"), (uint32_t)999);
-		HAL_UART_Transmit(&huart6, (uint8_t *)buffer8, strlen(buffer8), 999);
-		sprintf(buffer7, "%lu\r\n", TOF_distance7); 
-		HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)"TOFuart7:", (uint16_t)strlen("TOFuart7:"), (uint32_t)999);
-		HAL_UART_Transmit(&huart6, (uint8_t *)buffer7, strlen(buffer7), 999);
+//		char buffer8[32];
+//		char buffer7[32];
+//		sprintf(buffer8, "%lu\r\n", TOF_distance8); 
+//		HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)"TOFuart8:", (uint16_t)strlen("TOFuart8:"), (uint32_t)999);
+//		HAL_UART_Transmit(&huart6, (uint8_t *)buffer8, strlen(buffer8), 999);
+//		sprintf(buffer7, "%lu\r\n", TOF_distance7); 
+//		HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)"TOFuart7:", (uint16_t)strlen("TOFuart7:"), (uint32_t)999);
+		
+		HAL_UART_Transmit((UART_HandleTypeDef *)&huart7, (uint8_t *)"AMMMWSSGSDGC", (uint16_t)strlen("AMMMWSSGSDGC"), (uint32_t)999);
+	//	HAL_UART_Transmit(&huart6, (uint8_t *)buffer7, strlen(buffer7), 999);
     osDelay(100);
 		
 		//CAN_cmd_chassis(500, 500, 500, 500);
@@ -150,6 +158,24 @@ void StartDefaultTask(void const * argument)
 		
   }
   /* USER CODE END StartDefaultTask */
+}
+
+/* USER CODE BEGIN Header_StartTask02 */
+/**
+* @brief Function implementing the PID_Control thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask02 */
+void StartTask02(void const * argument)
+{
+  /* USER CODE BEGIN StartTask02 */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartTask02 */
 }
 
 /* Private application code --------------------------------------------------*/
