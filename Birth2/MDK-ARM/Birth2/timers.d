@@ -1,0 +1,15 @@
+birth2\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/timers.c
+birth2\timers.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdlib.h
+birth2\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+birth2\timers.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
+birth2\timers.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
+birth2\timers.o: ../Core/Inc/FreeRTOSConfig.h
+birth2\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+birth2\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+birth2\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+birth2\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
+birth2\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+birth2\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+birth2\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
+birth2\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
+birth2\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h

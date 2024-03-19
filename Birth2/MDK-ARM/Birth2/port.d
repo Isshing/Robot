@@ -1,0 +1,12 @@
+birth2\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
+birth2\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+birth2\port.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
+birth2\port.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
+birth2\port.o: ../Core/Inc/FreeRTOSConfig.h
+birth2\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+birth2\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+birth2\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+birth2\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
+birth2\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+birth2\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+birth2\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
