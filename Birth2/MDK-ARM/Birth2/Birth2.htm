@@ -3,7 +3,7 @@
 <title>Static Call Graph - [Birth2\Birth2.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image Birth2\Birth2.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Tue Mar 19 19:03:19 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Tue Mar 19 19:18:46 2024
 <BR><P>
 <H3>Maximum Stack Usage =        240 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -23,8 +23,8 @@ Mutually Recursive functions
  <LI><a href="#[a]">HardFault_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[a]">HardFault_Handler</a><BR>
  <LI><a href="#[b]">MemManage_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[b]">MemManage_Handler</a><BR>
  <LI><a href="#[9]">NMI_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[9]">NMI_Handler</a><BR>
+ <LI><a href="#[72]">PID_Control_Function</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[72]">PID_Control_Function</a><BR>
  <LI><a href="#[d9]">UART_EndRxTransfer</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[d9]">UART_EndRxTransfer</a><BR>
- <LI><a href="#[72]">StartTask02</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[72]">StartTask02</a><BR>
  <LI><a href="#[d]">UsageFault_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[d]">UsageFault_Handler</a><BR>
  <LI><a href="#[d8]">UART_EndTxTransfer</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[d8]">UART_EndTxTransfer</a><BR>
 </UL>
@@ -89,6 +89,7 @@ Function Pointers
  <LI><a href="#[5c]">OTG_HS_EP1_OUT_IRQHandler</a> from startup_stm32f427xx.o(.text) referenced from startup_stm32f427xx.o(RESET)
  <LI><a href="#[5f]">OTG_HS_IRQHandler</a> from startup_stm32f427xx.o(.text) referenced from startup_stm32f427xx.o(RESET)
  <LI><a href="#[5e]">OTG_HS_WKUP_IRQHandler</a> from startup_stm32f427xx.o(.text) referenced from startup_stm32f427xx.o(RESET)
+ <LI><a href="#[72]">PID_Control_Function</a> from freertos.o(i.PID_Control_Function) referenced from freertos.o(.constdata)
  <LI><a href="#[13]">PVD_IRQHandler</a> from startup_stm32f427xx.o(.text) referenced from startup_stm32f427xx.o(RESET)
  <LI><a href="#[10]">PendSV_Handler</a> from port.o(.emb_text) referenced from startup_stm32f427xx.o(RESET)
  <LI><a href="#[17]">RCC_IRQHandler</a> from startup_stm32f427xx.o(.text) referenced from startup_stm32f427xx.o(RESET)
@@ -105,7 +106,6 @@ Function Pointers
  <LI><a href="#[67]">SPI6_IRQHandler</a> from startup_stm32f427xx.o(.text) referenced from startup_stm32f427xx.o(RESET)
  <LI><a href="#[e]">SVC_Handler</a> from port.o(.emb_text) referenced from startup_stm32f427xx.o(RESET)
  <LI><a href="#[71]">StartDefaultTask</a> from freertos.o(i.StartDefaultTask) referenced from freertos.o(.constdata)
- <LI><a href="#[72]">StartTask02</a> from freertos.o(i.StartTask02) referenced from freertos.o(.constdata)
  <LI><a href="#[11]">SysTick_Handler</a> from port.o(i.SysTick_Handler) referenced from startup_stm32f427xx.o(RESET)
  <LI><a href="#[6a]">SystemInit</a> from system_stm32f4xx.o(i.SystemInit) referenced from startup_stm32f427xx.o(.text)
  <LI><a href="#[14]">TAMP_STAMP_IRQHandler</a> from startup_stm32f427xx.o(.text) referenced from startup_stm32f427xx.o(RESET)
@@ -1196,22 +1196,22 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f427xx.o(RESET)
 </UL>
+<P><STRONG><a name="[72]"></a>PID_Control_Function</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, freertos.o(i.PID_Control_Function))
+<BR><BR>[Stack]<UL><LI>Max Depth = 80 + In Cycle
+<LI>Call Chain = PID_Control_Function &rArr;  PID_Control_Function (Cycle)
+</UL>
+<BR>[Calls]<UL><LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
+<LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_Control_Function
+</UL>
+<BR>[Called By]<UL><LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_Control_Function
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> freertos.o(.constdata)
+</UL>
 <P><STRONG><a name="[71]"></a>StartDefaultTask</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, freertos.o(i.StartDefaultTask))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = StartDefaultTask &rArr; osDelay &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
 <LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Transmit
-</UL>
-<BR>[Address Reference Count : 1]<UL><LI> freertos.o(.constdata)
-</UL>
-<P><STRONG><a name="[72]"></a>StartTask02</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, freertos.o(i.StartTask02))
-<BR><BR>[Stack]<UL><LI>Max Depth = 80 + In Cycle
-<LI>Call Chain = StartTask02 &rArr;  StartTask02 (Cycle)
-</UL>
-<BR>[Calls]<UL><LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
-<LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartTask02
-</UL>
-<BR>[Called By]<UL><LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartTask02
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> freertos.o(.constdata)
 </UL>
@@ -1315,8 +1315,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
 </UL>
-<BR>[Called By]<UL><LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartTask02
-<LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartDefaultTask
+<BR>[Called By]<UL><LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartDefaultTask
+<LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_Control_Function
 </UL>
 
 <P><STRONG><a name="[e2]"></a>osKernelStart</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, cmsis_os.o(i.osKernelStart))

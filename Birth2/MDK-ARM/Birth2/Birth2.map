@@ -89,14 +89,14 @@ Section Cross References
     freertos.o(i.MX_FREERTOS_Init) refers to cmsis_os.o(i.osThreadCreate) for osThreadCreate
     freertos.o(i.MX_FREERTOS_Init) refers to freertos.o(.constdata) for .constdata
     freertos.o(i.MX_FREERTOS_Init) refers to freertos.o(.data) for .data
+    freertos.o(i.PID_Control_Function) refers to cmsis_os.o(i.osDelay) for osDelay
     freertos.o(i.StartDefaultTask) refers to stm32f4xx_hal_uart.o(i.HAL_UART_Transmit) for HAL_UART_Transmit
     freertos.o(i.StartDefaultTask) refers to cmsis_os.o(i.osDelay) for osDelay
     freertos.o(i.StartDefaultTask) refers to usart.o(.bss) for huart7
-    freertos.o(i.StartTask02) refers to cmsis_os.o(i.osDelay) for osDelay
     freertos.o(i.vApplicationGetIdleTaskMemory) refers to freertos.o(.bss) for .bss
     freertos.o(.constdata) refers to freertos.o(.conststring) for .conststring
     freertos.o(.constdata) refers to freertos.o(i.StartDefaultTask) for StartDefaultTask
-    freertos.o(.constdata) refers to freertos.o(i.StartTask02) for StartTask02
+    freertos.o(.constdata) refers to freertos.o(i.PID_Control_Function) for PID_Control_Function
     can.o(i.HAL_CAN_MspDeInit) refers to stm32f4xx_hal_gpio.o(i.HAL_GPIO_DeInit) for HAL_GPIO_DeInit
     can.o(i.HAL_CAN_MspDeInit) refers to stm32f4xx_hal_cortex.o(i.HAL_NVIC_DisableIRQ) for HAL_NVIC_DisableIRQ
     can.o(i.HAL_CAN_MspDeInit) refers to can.o(.data) for .data
@@ -2251,8 +2251,8 @@ Image Symbol Table
     i.MX_USART6_UART_Init                    0x08002230   Section        0  usart.o(i.MX_USART6_UART_Init)
     i.MemManage_Handler                      0x08002268   Section        0  stm32f4xx_it.o(i.MemManage_Handler)
     i.NMI_Handler                            0x0800226a   Section        0  stm32f4xx_it.o(i.NMI_Handler)
-    i.StartDefaultTask                       0x0800226c   Section        0  freertos.o(i.StartDefaultTask)
-    i.StartTask02                            0x08002298   Section        0  freertos.o(i.StartTask02)
+    i.PID_Control_Function                   0x0800226c   Section        0  freertos.o(i.PID_Control_Function)
+    i.StartDefaultTask                       0x08002274   Section        0  freertos.o(i.StartDefaultTask)
     i.SysTick_Handler                        0x080022a0   Section        0  port.o(i.SysTick_Handler)
     i.SystemClock_Config                     0x080022cc   Section        0  main.o(i.SystemClock_Config)
     i.SystemInit                             0x0800236c   Section        0  system_stm32f4xx.o(i.SystemInit)
@@ -2675,8 +2675,8 @@ Image Symbol Table
     MX_USART6_UART_Init                      0x08002231   Thumb Code    48  usart.o(i.MX_USART6_UART_Init)
     MemManage_Handler                        0x08002269   Thumb Code     2  stm32f4xx_it.o(i.MemManage_Handler)
     NMI_Handler                              0x0800226b   Thumb Code     2  stm32f4xx_it.o(i.NMI_Handler)
-    StartDefaultTask                         0x0800226d   Thumb Code    24  freertos.o(i.StartDefaultTask)
-    StartTask02                              0x08002299   Thumb Code     8  freertos.o(i.StartTask02)
+    PID_Control_Function                     0x0800226d   Thumb Code     8  freertos.o(i.PID_Control_Function)
+    StartDefaultTask                         0x08002275   Thumb Code    24  freertos.o(i.StartDefaultTask)
     SysTick_Handler                          0x080022a1   Thumb Code    38  port.o(i.SysTick_Handler)
     SystemClock_Config                       0x080022cd   Thumb Code   150  main.o(i.SystemClock_Config)
     SystemInit                               0x0800236d   Thumb Code    12  system_stm32f4xx.o(i.SystemInit)
@@ -2923,8 +2923,8 @@ Memory Map of the image
     0x08002230   0x08002230   0x00000038   Code   RO          442    i.MX_USART6_UART_Init  usart.o
     0x08002268   0x08002268   0x00000002   Code   RO          532    i.MemManage_Handler  stm32f4xx_it.o
     0x0800226a   0x0800226a   0x00000002   Code   RO          533    i.NMI_Handler       stm32f4xx_it.o
-    0x0800226c   0x0800226c   0x0000002c   Code   RO          301    i.StartDefaultTask  freertos.o
-    0x08002298   0x08002298   0x00000008   Code   RO          302    i.StartTask02       freertos.o
+    0x0800226c   0x0800226c   0x00000008   Code   RO          301    i.PID_Control_Function  freertos.o
+    0x08002274   0x08002274   0x0000002c   Code   RO          302    i.StartDefaultTask  freertos.o
     0x080022a0   0x080022a0   0x0000002c   Code   RO         4760    i.SysTick_Handler   port.o
     0x080022cc   0x080022cc   0x000000a0   Code   RO           75    i.SystemClock_Config  main.o
     0x0800236c   0x0800236c   0x00000010   Code   RO         3487    i.SystemInit        system_stm32f4xx.o
@@ -3041,7 +3041,7 @@ Image component sizes
        130          0          0          0          0      22923   cmsis_os.o
        108          4          0          0          0        802   dma.o
          0          0          0          0          0      15356   event_groups.o
-       132         32         80          8        596       3369   freertos.o
+       132         32         80          8        596       3386   freertos.o
        140          8          0          0          0        963   gpio.o
        504         32          0         32      15360       7455   heap_4.o
        144          0          0          0          0       3486   list.o
@@ -3067,7 +3067,7 @@ Image component sizes
       1000         96          0         20        664       6648   usart.o
 
     ----------------------------------------------------------------------
-     12404        880        572        172      18668    1595931   Object Totals
+     12404        880        572        172      18668    1595948   Object Totals
          0          0         32          0          0          0   (incl. Generated)
         32          0          0          3          0          0   (incl. Padding)
 
@@ -3121,8 +3121,8 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     13116        896        572        172      18764    1583079   Grand Totals
-     13116        896        572        172      18764    1583079   ELF Image Totals
+     13116        896        572        172      18764    1583096   Grand Totals
+     13116        896        572        172      18764    1583096   ELF Image Totals
      13116        896        572        172          0          0   ROM Totals
 
 ==============================================================================

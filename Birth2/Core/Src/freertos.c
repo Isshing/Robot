@@ -66,7 +66,7 @@ osThreadId PID_ControlHandle;
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void const * argument);
-void StartTask02(void const * argument);
+void PID_Control_Function(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -118,7 +118,7 @@ void MX_FREERTOS_Init(void) {
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of PID_Control */
-  osThreadDef(PID_Control, StartTask02, osPriorityIdle, 0, 128);
+  osThreadDef(PID_Control, PID_Control_Function, osPriorityIdle, 0, 128);
   PID_ControlHandle = osThreadCreate(osThread(PID_Control), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -160,22 +160,23 @@ void StartDefaultTask(void const * argument)
   /* USER CODE END StartDefaultTask */
 }
 
-/* USER CODE BEGIN Header_StartTask02 */
+/* USER CODE BEGIN Header_PID_Control_Function */
 /**
 * @brief Function implementing the PID_Control thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartTask02 */
-void StartTask02(void const * argument)
+/* USER CODE END Header_PID_Control_Function */
+void PID_Control_Function(void const * argument)
 {
-  /* USER CODE BEGIN StartTask02 */
+  /* USER CODE BEGIN PID_Control_Function */
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+		
+    osDelay(100);
   }
-  /* USER CODE END StartTask02 */
+  /* USER CODE END PID_Control_Function */
 }
 
 /* Private application code --------------------------------------------------*/
