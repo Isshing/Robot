@@ -1625,46 +1625,6 @@
               <FileType>5</FileType>
               <FilePath>.\bsp\CAN_receive.h</FilePath>
             </File>
-            <File>
-              <FileName>chassis_behaviour.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\bsp\chassis_behaviour.c</FilePath>
-            </File>
-            <File>
-              <FileName>chassis_behaviour.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\bsp\chassis_behaviour.h</FilePath>
-            </File>
-            <File>
-              <FileName>chassis_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\bsp\chassis_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>chassis_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\bsp\chassis_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>user_lib.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\bsp\user_lib.c</FilePath>
-            </File>
-            <File>
-              <FileName>user_lib.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\bsp\user_lib.h</FilePath>
-            </File>
-            <File>
-              <FileName>QMath.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\bsp\QMath.h</FilePath>
-            </File>
-            <File>
-              <FileName>QMath.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\bsp\QMath.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
