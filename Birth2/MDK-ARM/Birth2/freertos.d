@@ -1,7 +1,7 @@
 birth2\freertos.o: ../Core/Src/freertos.c
 birth2\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-birth2\freertos.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
-birth2\freertos.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
+birth2\freertos.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
+birth2\freertos.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
 birth2\freertos.o: ../Core/Inc/FreeRTOSConfig.h
 birth2\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 birth2\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
@@ -47,7 +47,10 @@ birth2\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 birth2\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 birth2\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 birth2\freertos.o: ../Core/Inc/can.h
-birth2\freertos.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\string.h
-birth2\freertos.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stdio.h
+birth2\freertos.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\string.h
+birth2\freertos.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdio.h
 birth2\freertos.o: ./bsp/CAN_receive.h
 birth2\freertos.o: ./bsp/struct_typedef.h
+birth2\freertos.o: ./bsp/pid.h
+birth2\freertos.o: ./bsp/Qmath.h
+birth2\freertos.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\math.h

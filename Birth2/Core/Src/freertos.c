@@ -29,6 +29,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "CAN_receive.h"
+#include "pid.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -56,6 +57,9 @@ extern unsigned long TOF_distance7;
 extern UART_HandleTypeDef huart8;
 extern UART_HandleTypeDef huart7;
 extern UART_HandleTypeDef huart6;
+extern const motor_measure_t *motor_data_0,*motor_data_1,*motor_data_2,*motor_data_3;
+extern pid_type_def motor_pid_0,motor_pid_1,motor_pid_2,motor_pid_3;	
+extern int set_speed_0,set_speed_1,set_speed_2,set_speed_3 ;							//目标速度
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId PID_ControlHandle;
@@ -171,11 +175,19 @@ void PID_Control_Function(void const * argument)
 {
   /* USER CODE BEGIN PID_Control_Function */
   /* Infinite loop */
+	
   for(;;)
   {
+	  PID_calc(&motor_pid_0,motor_data_0->speed_rpm,set_speed_0);			//PID结构体，实际速度，设定速度
+		PID_calc(&motor_pid_1,motor_data_1->speed_rpm,set_speed_1);			//PID结构体，实际速度，设定速度
+		PID_calc(&motor_pid_2,motor_data_2->speed_rpm,set_speed_2);			//PID结构体，实际速度，设定速度
+		PID_calc(&motor_pid_3,motor_data_3->speed_rpm,set_speed_3);			//PID结构体，实际速度，设定速度
 		
-    osDelay(100);
+		CAN_cmd_chassis(motor_pid_0.out,motor_pid_1.out,motor_pid_2.out,motor_pid_3.out);	//发送控制电流
+		
+    osDelay(2);
   }
+	
   /* USER CODE END PID_Control_Function */
 }
 

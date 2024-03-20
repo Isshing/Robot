@@ -27,6 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "CAN_receive.h"
+#include "pid.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,6 +62,14 @@ void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN 0 */
 extern void USR_UartInit(void);
 extern void can_filter_init(void);
+const motor_measure_t *motor_data_0,*motor_data_1,*motor_data_2,*motor_data_3;
+pid_type_def motor_pid_0,motor_pid_1,motor_pid_2,motor_pid_3;					//声明PID数据结构体
+int set_speed_0,set_speed_1,set_speed_2,set_speed_3 = 0;							//目标速度
+
+const fp32 PID_data_0[3]={5,0.01,0};	//P,I,D
+const fp32 PID_data_1[3]={5,0.01,0};	//P,I,D
+const fp32 PID_data_2[3]={5,0.01,0};	//P,I,D
+const fp32 PID_data_3[3]={5,0.01,0};	//P,I,D
 /* USER CODE END 0 */
 
 /**
@@ -100,6 +109,14 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	USR_UartInit();
 	can_filter_init();
+	motor_data_0 = get_chassis_motor_measure_point(0); 
+	motor_data_1 = get_chassis_motor_measure_point(1); 
+	motor_data_2 = get_chassis_motor_measure_point(2); 
+	motor_data_3 = get_chassis_motor_measure_point(3); 
+	PID_init(&motor_pid_0,PID_POSITION,PID_data_0,16000,2000);   //PID结构体，PID计算模式，PID参数，最大值，最大I值
+	PID_init(&motor_pid_1,PID_POSITION,PID_data_1,16000,2000); 
+	PID_init(&motor_pid_2,PID_POSITION,PID_data_2,16000,2000); 
+	PID_init(&motor_pid_3,PID_POSITION,PID_data_3,16000,2000); 
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */

@@ -1,6 +1,6 @@
 #include "QMath.h"
-#include "math.h"
-
+#include <math.h>
+#include <stdlib.h>
 /*开平方函数*/
 float FSqrt(float x)
 {
@@ -16,7 +16,7 @@ float FSqrt(float x)
 /*指数函数*/
 float FExp(float x)
 {
-    x = 1.0 + x / 4096;
+    x = 1.0f + x / 4096;
 
     x *= x;
     x *= x;
@@ -56,11 +56,11 @@ uint8_t Atan2(float y, float x)
     float f32_tanNum;
     uint8_t u8_Alpha; // 返回角度
     f32_tanNum = y / x;
-    if (f32_tanNum > -0.41421365 && f32_tanNum < 0.41421356)
+    if (f32_tanNum > -0.41421365f && f32_tanNum < 0.41421356f)
         u8_Alpha = 0; // 水平方向
-    else if (f32_tanNum >= 0.41421356 && f32_tanNum < 2.41421356)
+    else if (f32_tanNum >= 0.41421356f && f32_tanNum < 2.41421356f)
         u8_Alpha = 1; // 右上、左下
-    else if (f32_tanNum <= -0.41421356 && f32_tanNum > -2.41421362)
+    else if (f32_tanNum <= -0.41421356f && f32_tanNum > -2.41421362f)
         u8_Alpha = 3; // 左上、右下
     else
         u8_Alpha = 2; // 竖直方向

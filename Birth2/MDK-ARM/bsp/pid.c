@@ -1,5 +1,117 @@
 #include "pid.h"
+#include <stdio.h>
+#define LimitMax(input, max)   \
+    {                          \
+        if (input > max)       \
+        {                      \
+            input = max;       \
+        }                      \
+        else if (input < -max) \
+        {                      \
+            input = -max;      \
+        }                      \
+    }
 
+/**
+  * @brief          pid struct data init
+  * @param[out]     pid: PID struct data point
+  * @param[in]      mode: PID_POSITION: normal pid
+  *                 PID_DELTA: delta pid
+  * @param[in]      PID: 0: kp, 1: ki, 2:kd
+  * @param[in]      max_out: pid max out
+  * @param[in]      max_iout: pid max iout
+  * @retval         none
+  */
+void PID_init(pid_type_def *pid, uint8_t mode, const fp32 PID[3], fp32 max_out, fp32 max_iout)
+{
+    if (pid == NULL || PID == NULL)
+    {
+        return;
+    }
+    pid->mode = mode;
+    pid->Kp = PID[0];
+    pid->Ki = PID[1];
+    pid->Kd = PID[2];
+    pid->max_out = max_out;
+    pid->max_iout = max_iout;
+    pid->Dbuf[0] = pid->Dbuf[1] = pid->Dbuf[2] = 0.0f;
+    pid->error[0] = pid->error[1] = pid->error[2] = pid->Pout = pid->Iout = pid->Dout = pid->out = 0.0f;
+}
+
+/**
+  * @brief          pid calculate 
+  * @param[out]     pid: PID struct data point
+  * @param[in]      ref: feedback data 
+  * @param[in]      set: set point
+  * @retval         pid out
+  */
+/**
+  * @brief          pid????
+  * @param[out]     pid: PID?????????
+  * @param[in]      ref: ????????
+  * @param[in]      set: ???
+  * @retval         pid???
+  */
+fp32 PID_calc(pid_type_def *pid, fp32 ref, fp32 set)
+{
+    if (pid == NULL)
+    {
+        return 0.0f;
+    }
+
+    pid->error[2] = pid->error[1];
+    pid->error[1] = pid->error[0];
+    pid->set = set;
+    pid->fdb = ref;
+    pid->error[0] = set - ref;
+    if (pid->mode == PID_POSITION)
+    {
+        pid->Pout = pid->Kp * pid->error[0];
+        pid->Iout += pid->Ki * pid->error[0];
+        pid->Dbuf[2] = pid->Dbuf[1];
+        pid->Dbuf[1] = pid->Dbuf[0];
+        pid->Dbuf[0] = (pid->error[0] - pid->error[1]);
+        pid->Dout = pid->Kd * pid->Dbuf[0];
+        LimitMax(pid->Iout, pid->max_iout);
+        pid->out = pid->Pout + pid->Iout + pid->Dout;
+        LimitMax(pid->out, pid->max_out);
+    }
+    else if (pid->mode == PID_DELTA)
+    {
+        pid->Pout = pid->Kp * (pid->error[0] - pid->error[1]);
+        pid->Iout = pid->Ki * pid->error[0];
+        pid->Dbuf[2] = pid->Dbuf[1];
+        pid->Dbuf[1] = pid->Dbuf[0];
+        pid->Dbuf[0] = (pid->error[0] - 2.0f * pid->error[1] + pid->error[2]);
+        pid->Dout = pid->Kd * pid->Dbuf[0];
+        pid->out += pid->Pout + pid->Iout + pid->Dout;
+        LimitMax(pid->out, pid->max_out);
+    }
+    return pid->out;
+}
+
+/**
+  * @brief          pid out clear
+  * @param[out]     pid: PID struct data point
+  * @retval         none
+  */
+/**
+  * @brief          pid ??????
+  * @param[out]     pid: PID?????????
+  * @retval         none
+  */
+void PID_clear(pid_type_def *pid)
+{
+    if (pid == NULL)
+    {
+        return;
+    }
+
+    pid->error[0] = pid->error[1] = pid->error[2] = 0.0f;
+    pid->Dbuf[0] = pid->Dbuf[1] = pid->Dbuf[2] = 0.0f;
+    pid->out = pid->Pout = pid->Iout = pid->Dout = 0.0f;
+    pid->fdb = pid->set = 0.0f;
+}
 //----------------------------------------------------------变量定义--------------------------------------------------------------//
 //----------------------------------------------------------变量定义--------------------------------------------------------------//
 //----------------------------------------------------------变量定义--------------------------------------------------------------//
@@ -16,9 +128,7 @@ uint8_t Speed_Bia = 3; // 左右轮速度差(保证直行时走直线)
 float history[4];
 
 //----------------------------------------------------------后轮电机控制-------------------------------------------------------------//
-//----------------------------------------------------------后轮电机控制-------------------------------------------------------------//
-//----------------------------------------------------------后轮电机控制-------------------------------------------------------------//
-//----------------------------------------------------------后轮电机控制-------------------------------------------------------------//
+
 
 //--------------------------------------------------------------
 //  @brief     左轮增量式PID(变积分)
@@ -40,12 +150,12 @@ void Motor_L_Control_Change_Integral(float setpoint, PID_2 *vPID, Motor_Para *Mo
     static float lasterror = 0; // 前一拍偏差
 
     thisError         = setpoint - processValue; // 得到偏差值
-    Motor->L_Change_P = Motor->L_Bas_KP + Motor->L_Gain_KP * (1 - 1.0 / FExp(Motor->L_Cp * Fabs(thisError)));
-    Motor->L_Change_I = (1.0 / FExp(Motor->L_Ci * Fabs(thisError))) * Motor->L_Max_I;
+    Motor->L_Change_P = Motor->L_Bas_KP + Motor->L_Gain_KP * (1 - 1.0f / FExp(Motor->L_Cp * Fabs(thisError)));
+    Motor->L_Change_I = (1.0f / FExp(Motor->L_Ci * Fabs(thisError))) * Motor->L_Max_I;
 
     result = vPID->result;
 
-    iError = (thisError + lasterror) / 2.0; // 如果上次输出结果处于正常范围内，正常积分
+    iError = (thisError + lasterror) / 2.0f; // 如果上次输出结果处于正常范围内，正常积分
 
     pError      = thisError - lasterror;
     vPID->P_out = Motor->L_Change_P * pError;
@@ -80,11 +190,11 @@ void Motor_R_Control_Change_Integral(float setpoint, PID_2 *vPID, Motor_Para *Mo
     static float lasterror = 0; // 前一拍偏差
 
     thisError         = setpoint - processValue; // 得到偏差值
-    Motor->R_Change_P = Motor->R_Bas_KP + Motor->R_Gain_KP * (1 - 1.0 / FExp(Motor->R_Cp * Fabs(thisError)));
-    Motor->R_Change_I = (1.0 / FExp(Motor->R_Ci * Fabs(thisError))) * Motor->R_Max_I;
+    Motor->R_Change_P = Motor->R_Bas_KP + Motor->R_Gain_KP * (1 - 1.0f / FExp(Motor->R_Cp * Fabs(thisError)));
+    Motor->R_Change_I = (1.0f / FExp(Motor->R_Ci * Fabs(thisError))) * Motor->R_Max_I;
     result            = vPID->result;
 
-    iError = (thisError + lasterror) / 2.0; // 如果上次输出结果处于正常范围内，正常积分
+    iError = (thisError + lasterror) / 2.0f; // 如果上次输出结果处于正常范围内，正常积分
 
     pError = thisError - lasterror;
 
