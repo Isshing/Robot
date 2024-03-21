@@ -1,9 +1,9 @@
 birth2\cmsis_os.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c
-birth2\cmsis_os.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\string.h
+birth2\cmsis_os.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\string.h
 birth2\cmsis_os.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 birth2\cmsis_os.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-birth2\cmsis_os.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
-birth2\cmsis_os.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
+birth2\cmsis_os.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
+birth2\cmsis_os.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
 birth2\cmsis_os.o: ../Core/Inc/FreeRTOSConfig.h
 birth2\cmsis_os.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 birth2\cmsis_os.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h

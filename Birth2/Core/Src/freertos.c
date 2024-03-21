@@ -22,7 +22,6 @@
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "can.h"
@@ -60,6 +59,8 @@ extern UART_HandleTypeDef huart6;
 extern const motor_measure_t *motor_data_0,*motor_data_1,*motor_data_2,*motor_data_3;
 extern pid_type_def motor_pid_0,motor_pid_1,motor_pid_2,motor_pid_3;	
 extern int set_speed_0,set_speed_1,set_speed_2,set_speed_3;							//Ŀ���ٶ�
+extern void ANO_sent_data(int16 A, int16 B, int16 C, int16 D, int16 E, int16 F, int16 G, int16 H, int16 I, int16 J);
+
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId PID_ControlHandle;
@@ -162,8 +163,8 @@ void StartDefaultTask(void const * argument)
     // sprintf(buffer7, "%lu\r\n", 100); 
 		// sprintf(buffer8, "%lu\r\n", TOF_distance8); 
     // HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)"TOFuart7:", (uint16_t)strlen("TOFuart7:"), (uint32_t)999);
-
-
+	 
+		ANO_sent_data(motor_data_0->speed_rpm,motor_data_1->speed_rpm, motor_data_2->speed_rpm, motor_data_3->speed_rpm, set_speed_0, -set_speed_1, -set_speed_2, set_speed_3, 0, 0);
     osDelay(100);
 		
   }
@@ -177,6 +178,7 @@ void StartDefaultTask(void const * argument)
 * @retval None
 */
 /* USER CODE END Header_PID_Control_Function */
+int counter = 0;
 void PID_Control_Function(void const * argument)
 {
   /* USER CODE BEGIN PID_Control_Function */
@@ -184,12 +186,26 @@ void PID_Control_Function(void const * argument)
 	
   for(;;)
   {
-	  PID_calc(&motor_pid_0,motor_data_0->speed_rpm,300);			//PID�ṹ�壬ʵ���ٶȣ��趨�ٶ�
-		PID_calc(&motor_pid_1,motor_data_1->speed_rpm,set_speed_1);			//PID�ṹ�壬ʵ���ٶȣ��趨�ٶ�
-		PID_calc(&motor_pid_2,motor_data_2->speed_rpm,set_speed_2);			//PID�ṹ�壬ʵ���ٶȣ��趨�ٶ�
-		PID_calc(&motor_pid_3,motor_data_3->speed_rpm,set_speed_3);			//PID�ṹ�壬ʵ���ٶȣ��趨�ٶ�
-		
+//		counter++;
+//		if(counter<3000){
+//			PID_calc(&motor_pid_0,motor_data_0->speed_rpm,400);			//PID�ṹ�壬ʵ���ٶȣ��趨�ٶ�
+//			PID_calc(&motor_pid_1,motor_data_1->speed_rpm,-400);//set_speed_1);			//PID�ṹ�壬ʵ���ٶȣ��趨�ٶ�
+//			PID_calc(&motor_pid_2,motor_data_2->speed_rpm,-400);//set_speed_2);			//PID�ṹ�壬ʵ���ٶȣ��趨�ٶ�
+//			PID_calc(&motor_pid_3,motor_data_3->speed_rpm,400);//set_speed_3);			//PID�ṹ�壬ʵ���ٶȣ��趨�ٶ�
+//			CAN_cmd_chassis(motor_pid_0.out,motor_pid_1.out,motor_pid_2.out,motor_pid_3.out);	//���Ϳ��Ƶ���
+//		}else{
+//			CAN_cmd_chassis(0,0,0,0);
+//		}
+		set_speed_0 = 500;
+		set_speed_1 = 500;
+		set_speed_2 = 500;
+		set_speed_3 = 500;
+		PID_calc(&motor_pid_0,motor_data_0->speed_rpm,set_speed_0);			//PID�ṹ�壬ʵ���ٶȣ��趨�ٶ�
+		PID_calc(&motor_pid_1,motor_data_1->speed_rpm,-set_speed_1);//set_speed_1);			//PID�ṹ�壬ʵ���ٶȣ��趨�ٶ�
+		PID_calc(&motor_pid_2,motor_data_2->speed_rpm,-set_speed_2);//set_speed_2);			//PID�ṹ�壬ʵ���ٶȣ��趨�ٶ�
+		PID_calc(&motor_pid_3,motor_data_3->speed_rpm,set_speed_3);//set_speed_3);			//PID�ṹ�壬ʵ���ٶȣ��趨�ٶ�
 		CAN_cmd_chassis(motor_pid_0.out,motor_pid_1.out,motor_pid_2.out,motor_pid_3.out);	//���Ϳ��Ƶ���
+		
 		
     osDelay(2);
   }

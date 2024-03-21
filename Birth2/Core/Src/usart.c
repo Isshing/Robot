@@ -19,7 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
-
+#include "struct_typedef.h"
 /* USER CODE BEGIN 0 */
 uint8_t uart7Rx[32];         
 uint16_t uart7RxLength;
@@ -414,6 +414,66 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			HAL_UART_Receive_DMA(&huart8, uart8Rx, 32);
 		}
 		
+}
+
+
+
+
+
+
+#define BYTE0(dwTemp)       ( *( (char *)(&dwTemp)    ) )     /*!< uint32_t 数据拆分 byte0  */
+#define BYTE1(dwTemp)       ( *( (char *)(&dwTemp) + 1) )     /*!< uint32_t 数据拆分 byte1  */
+#define BYTE2(dwTemp)       ( *( (char *)(&dwTemp) + 2) )     /*!< uint32_t 数据拆分 byte2  */
+#define BYTE3(dwTemp)       ( *( (char *)(&dwTemp) + 3) )     /*!< uint32_t 数据拆分 byte3  */
+
+uint8 data_to_send[50];
+
+
+/*匿名上位机同时显示10个数据*/
+void ANO_sent_data(int16 A, int16 B, int16 C, int16 D, int16 E, int16 F, int16 G, int16 H, int16 I, int16 J)
+{
+    uint8 i;
+    uint8 checksum = 0;
+    uint8 addcheck = 0;
+    uint8 _cnt=0;
+
+
+    data_to_send[_cnt++]=0xAA;          //帧头
+    data_to_send[_cnt++]=0xFF;          //目标地址
+    data_to_send[_cnt++]=0XF1;          //功能码
+    data_to_send[_cnt++]=0x14;          //数据长度 20字节
+    data_to_send[_cnt++]=BYTE0(A);      //数据内容,小段模式，低位在前
+    data_to_send[_cnt++]=BYTE1(A);      //需要将字节进行拆分，调用上面的宏定义即可
+    data_to_send[_cnt++]=BYTE0(B);
+    data_to_send[_cnt++]=BYTE1(B);
+    data_to_send[_cnt++]=BYTE0(C);
+    data_to_send[_cnt++]=BYTE1(C);
+    data_to_send[_cnt++]=BYTE0(D);
+    data_to_send[_cnt++]=BYTE1(D);
+    data_to_send[_cnt++]=BYTE0(E);
+    data_to_send[_cnt++]=BYTE1(E);
+    data_to_send[_cnt++]=BYTE0(F);
+    data_to_send[_cnt++]=BYTE1(F);
+    data_to_send[_cnt++]=BYTE0(G);
+    data_to_send[_cnt++]=BYTE1(G);
+    data_to_send[_cnt++]=BYTE0(H);
+    data_to_send[_cnt++]=BYTE1(H);
+    data_to_send[_cnt++]=BYTE0(I);
+    data_to_send[_cnt++]=BYTE1(I);
+    data_to_send[_cnt++]=BYTE0(J);
+    data_to_send[_cnt++]=BYTE1(J);
+
+    for(i=0;i<data_to_send[3]+4;i++)
+    {
+        checksum+=data_to_send[i];
+        addcheck+=checksum;
+    }
+
+    data_to_send[_cnt++] = checksum;      //和校验
+    data_to_send[_cnt++] = addcheck;      //附加校验
+
+    HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)data_to_send, (uint16_t)_cnt, (uint32_t)999);
+
 }
 
 /* USER CODE END 1 */

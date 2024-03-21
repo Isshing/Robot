@@ -1,9 +1,9 @@
 birth2\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/queue.c
-birth2\queue.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stdlib.h
-birth2\queue.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\string.h
+birth2\queue.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdlib.h
+birth2\queue.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\string.h
 birth2\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-birth2\queue.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
-birth2\queue.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
+birth2\queue.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
+birth2\queue.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
 birth2\queue.o: ../Core/Inc/FreeRTOSConfig.h
 birth2\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 birth2\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h

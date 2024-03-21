@@ -1,8 +1,8 @@
 birth2\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/timers.c
-birth2\timers.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stdlib.h
+birth2\timers.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdlib.h
 birth2\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-birth2\timers.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
-birth2\timers.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
+birth2\timers.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
+birth2\timers.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
 birth2\timers.o: ../Core/Inc/FreeRTOSConfig.h
 birth2\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 birth2\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h

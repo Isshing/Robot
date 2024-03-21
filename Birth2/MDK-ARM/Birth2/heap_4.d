@@ -1,8 +1,8 @@
 birth2\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c
-birth2\heap_4.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stdlib.h
+birth2\heap_4.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdlib.h
 birth2\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-birth2\heap_4.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
-birth2\heap_4.o: E:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
+birth2\heap_4.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stddef.h
+birth2\heap_4.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdint.h
 birth2\heap_4.o: ../Core/Inc/FreeRTOSConfig.h
 birth2\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 birth2\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h

@@ -97,7 +97,7 @@ fp32 PID_calc(pid_type_def *pid, fp32 ref, fp32 set)
     else if (pid->mode == PID_CHANGE_DELTA)
     {
         pid->Pout = (pid->Bas_KP + pid->Gain_KP * (1 - 1.0f / FExp(pid->Cp * Fabs(pid->error[0]))))*(pid->error[0] - pid->error[1]);
-        pid->Iout = ((1.0f / FExp(pid->Ci * Fabs(pid->error[0]))) * pid->Max_I) * ((pid->error[0] + pid->error[1])/2.0);
+        pid->Iout = ((1.0f / FExp(pid->Ci * Fabs(pid->error[0]))) * pid->Max_I) * ((pid->error[0] + pid->error[1])/2.0f);
         pid->out += pid->Pout + pid->Iout;
         LimitMax(pid->out, pid->max_out);
     }

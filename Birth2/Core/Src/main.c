@@ -67,10 +67,10 @@ pid_type_def motor_pid_0,motor_pid_1,motor_pid_2,motor_pid_3;					//����
 int set_speed_0,set_speed_1,set_speed_2,set_speed_3 =0;							//Ŀ���ٶ�
 
 
-const fp32 PID_data_0[8]={5, 0.01, 0, 3, 3, 0.1, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
-const fp32 PID_data_1[8]={5, 0.01, 0, 3, 3, 0.1, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
-const fp32 PID_data_2[8]={5, 0.01, 0, 3, 3, 0.1, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
-const fp32 PID_data_3[8]={5, 0.01, 0, 3, 3, 0.1, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
+const fp32 PID_data_0[8]={4, 0.01, 0.5, 3, 3, 0.1, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
+const fp32 PID_data_1[8]={4, 0.01, 0.5, 3, 3, 0.1, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
+const fp32 PID_data_2[8]={4, 0.01, 0.5, 3, 3, 0.1, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
+const fp32 PID_data_3[8]={4, 0.01, 0.5, 3, 3, 0.1, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
 /* USER CODE END 0 */
 
 /**
