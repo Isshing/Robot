@@ -22,7 +22,7 @@
   * @param[in]      max_iout: pid max iout
   * @retval         none
   */
-void PID_init(pid_type_def *pid, uint8_t mode, const fp32 PID[3], fp32 max_out, fp32 max_iout)
+void PID_init(pid_type_def *pid, uint8_t mode, const fp32 PID[8], fp32 max_out, fp32 max_iout)
 {
     if (pid == NULL || PID == NULL)
     {
@@ -32,6 +32,11 @@ void PID_init(pid_type_def *pid, uint8_t mode, const fp32 PID[3], fp32 max_out, 
     pid->Kp = PID[0];
     pid->Ki = PID[1];
     pid->Kd = PID[2];
+    pid->Bas_KP = PID[3];
+    pid->Gain_KP = PID[4];
+    pid->Max_I = PID[5];
+    pid->Cp = PID[6];
+    pid->Ci = PID[7];
     pid->max_out = max_out;
     pid->max_iout = max_iout;
     pid->Dbuf[0] = pid->Dbuf[1] = pid->Dbuf[2] = 0.0f;
@@ -52,6 +57,7 @@ void PID_init(pid_type_def *pid, uint8_t mode, const fp32 PID[3], fp32 max_out, 
   * @param[in]      set: ???
   * @retval         pid???
   */
+
 fp32 PID_calc(pid_type_def *pid, fp32 ref, fp32 set)
 {
     if (pid == NULL)
@@ -59,12 +65,13 @@ fp32 PID_calc(pid_type_def *pid, fp32 ref, fp32 set)
         return 0.0f;
     }
 
-    pid->error[2] = pid->error[1];
-    pid->error[1] = pid->error[0];
+    pid->error[2] = pid->error[1]; //上上次误差
+    pid->error[1] = pid->error[0]; //上次误差
     pid->set = set;
-    pid->fdb = ref;
-    pid->error[0] = set - ref;
-    if (pid->mode == PID_POSITION)
+    pid->fdb = ref;                 //反馈
+    pid->error[0] = set - ref; //当前误差
+
+    if (pid->mode == PID_POSITION) //位置式
     {
         pid->Pout = pid->Kp * pid->error[0];
         pid->Iout += pid->Ki * pid->error[0];
@@ -76,7 +83,7 @@ fp32 PID_calc(pid_type_def *pid, fp32 ref, fp32 set)
         pid->out = pid->Pout + pid->Iout + pid->Dout;
         LimitMax(pid->out, pid->max_out);
     }
-    else if (pid->mode == PID_DELTA)
+    else if (pid->mode == PID_DELTA) //增量式
     {
         pid->Pout = pid->Kp * (pid->error[0] - pid->error[1]);
         pid->Iout = pid->Ki * pid->error[0];
@@ -85,6 +92,13 @@ fp32 PID_calc(pid_type_def *pid, fp32 ref, fp32 set)
         pid->Dbuf[0] = (pid->error[0] - 2.0f * pid->error[1] + pid->error[2]);
         pid->Dout = pid->Kd * pid->Dbuf[0];
         pid->out += pid->Pout + pid->Iout + pid->Dout;
+        LimitMax(pid->out, pid->max_out);
+    }
+    else if (pid->mode == PID_CHANGE_DELTA)
+    {
+        pid->Pout = (pid->Bas_KP + pid->Gain_KP * (1 - 1.0f / FExp(pid->Cp * Fabs(pid->error[0]))))*(pid->error[0] - pid->error[1]);
+        pid->Iout = ((1.0f / FExp(pid->Ci * Fabs(pid->error[0]))) * pid->Max_I) * ((pid->error[0] + pid->error[1])/2.0);
+        pid->out += pid->Pout + pid->Iout;
         LimitMax(pid->out, pid->max_out);
     }
     return pid->out;

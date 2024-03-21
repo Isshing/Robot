@@ -59,7 +59,7 @@ extern UART_HandleTypeDef huart7;
 extern UART_HandleTypeDef huart6;
 extern const motor_measure_t *motor_data_0,*motor_data_1,*motor_data_2,*motor_data_3;
 extern pid_type_def motor_pid_0,motor_pid_1,motor_pid_2,motor_pid_3;	
-extern int set_speed_0,set_speed_1,set_speed_2,set_speed_3 ;							//目标速度
+extern int set_speed_0,set_speed_1,set_speed_2,set_speed_3;							//目锟斤拷锟劫讹拷
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId PID_ControlHandle;
@@ -144,21 +144,27 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-//		char buffer8[32];
-//		char buffer7[32];
-//		sprintf(buffer8, "%lu\r\n", TOF_distance8); 
+		// char buffer8[32];
+		// char buffer7[32];
+    // sprintf(buffer7, "%lu\r\n", TOF_distance7); 
+		// sprintf(buffer8, "%lu\r\n", TOF_distance8); 
 //		HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)"TOFuart8:", (uint16_t)strlen("TOFuart8:"), (uint32_t)999);
 //		HAL_UART_Transmit(&huart6, (uint8_t *)buffer8, strlen(buffer8), 999);
-//		sprintf(buffer7, "%lu\r\n", TOF_distance7); 
-//		HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)"TOFuart7:", (uint16_t)strlen("TOFuart7:"), (uint32_t)999);
 		
-		HAL_UART_Transmit((UART_HandleTypeDef *)&huart7, (uint8_t *)"AMMMWSSGSDGC", (uint16_t)strlen("AMMMWSSGSDGC"), (uint32_t)999);
+		// HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)"TOFuart7:", (uint16_t)strlen("TOFuart7:"), (uint32_t)999);
+		
+		// HAL_UART_Transmit((UART_HandleTypeDef *)&huart7, (uint8_t *)"AMMMWSSGSDGC", (uint16_t)strlen("AMMMWSSGSDGC"), (uint32_t)999);
 	//	HAL_UART_Transmit(&huart6, (uint8_t *)buffer7, strlen(buffer7), 999);
-    osDelay(100);
 		
 		//CAN_cmd_chassis(500, 500, 500, 500);
-		
-		
+
+    //娴嬭瘯鐢垫満
+    // sprintf(buffer7, "%lu\r\n", 100); 
+		// sprintf(buffer8, "%lu\r\n", TOF_distance8); 
+    // HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)"TOFuart7:", (uint16_t)strlen("TOFuart7:"), (uint32_t)999);
+
+
+    osDelay(100);
 		
   }
   /* USER CODE END StartDefaultTask */
@@ -178,12 +184,12 @@ void PID_Control_Function(void const * argument)
 	
   for(;;)
   {
-	  PID_calc(&motor_pid_0,motor_data_0->speed_rpm,set_speed_0);			//PID结构体，实际速度，设定速度
-		PID_calc(&motor_pid_1,motor_data_1->speed_rpm,set_speed_1);			//PID结构体，实际速度，设定速度
-		PID_calc(&motor_pid_2,motor_data_2->speed_rpm,set_speed_2);			//PID结构体，实际速度，设定速度
-		PID_calc(&motor_pid_3,motor_data_3->speed_rpm,set_speed_3);			//PID结构体，实际速度，设定速度
+	  PID_calc(&motor_pid_0,motor_data_0->speed_rpm,300);			//PID锟结构锟藉，实锟斤拷锟劫度ｏ拷锟借定锟劫讹拷
+		PID_calc(&motor_pid_1,motor_data_1->speed_rpm,set_speed_1);			//PID锟结构锟藉，实锟斤拷锟劫度ｏ拷锟借定锟劫讹拷
+		PID_calc(&motor_pid_2,motor_data_2->speed_rpm,set_speed_2);			//PID锟结构锟藉，实锟斤拷锟劫度ｏ拷锟借定锟劫讹拷
+		PID_calc(&motor_pid_3,motor_data_3->speed_rpm,set_speed_3);			//PID锟结构锟藉，实锟斤拷锟劫度ｏ拷锟借定锟劫讹拷
 		
-		CAN_cmd_chassis(motor_pid_0.out,motor_pid_1.out,motor_pid_2.out,motor_pid_3.out);	//发送控制电流
+		CAN_cmd_chassis(motor_pid_0.out,motor_pid_1.out,motor_pid_2.out,motor_pid_3.out);	//锟斤拷锟酵匡拷锟狡碉拷锟斤拷
 		
     osDelay(2);
   }

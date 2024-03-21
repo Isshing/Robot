@@ -24,7 +24,8 @@
 enum PID_MODE
 {
     PID_POSITION = 0,
-    PID_DELTA
+    PID_DELTA,
+    PID_CHANGE_DELTA
 };
 
 typedef struct
@@ -34,7 +35,12 @@ typedef struct
     fp32 Kp;
     fp32 Ki;
     fp32 Kd;
-
+    fp32 Bas_KP;
+    fp32 Gain_KP;
+    fp32 Cp;
+    fp32 Ci;
+    fp32 Max_I;
+    
     fp32 max_out;  
     fp32 max_iout; 
 

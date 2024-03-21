@@ -63,13 +63,14 @@ void MX_FREERTOS_Init(void);
 extern void USR_UartInit(void);
 extern void can_filter_init(void);
 const motor_measure_t *motor_data_0,*motor_data_1,*motor_data_2,*motor_data_3;
-pid_type_def motor_pid_0,motor_pid_1,motor_pid_2,motor_pid_3;					//ÉùÃ÷PIDÊý¾Ý½á¹¹Ìå
-int set_speed_0,set_speed_1,set_speed_2,set_speed_3 = 0;							//Ä¿±êËÙ¶È
+pid_type_def motor_pid_0,motor_pid_1,motor_pid_2,motor_pid_3;					//ï¿½ï¿½ï¿½ï¿½PIDï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½
+int set_speed_0,set_speed_1,set_speed_2,set_speed_3 =0;							//Ä¿ï¿½ï¿½ï¿½Ù¶ï¿½
 
-const fp32 PID_data_0[3]={5,0.01,0};	//P,I,D
-const fp32 PID_data_1[3]={5,0.01,0};	//P,I,D
-const fp32 PID_data_2[3]={5,0.01,0};	//P,I,D
-const fp32 PID_data_3[3]={5,0.01,0};	//P,I,D
+
+const fp32 PID_data_0[8]={5, 0.01, 0, 3, 3, 0.1, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
+const fp32 PID_data_1[8]={5, 0.01, 0, 3, 3, 0.1, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
+const fp32 PID_data_2[8]={5, 0.01, 0, 3, 3, 0.1, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
+const fp32 PID_data_3[8]={5, 0.01, 0, 3, 3, 0.1, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
 /* USER CODE END 0 */
 
 /**
@@ -113,10 +114,10 @@ int main(void)
 	motor_data_1 = get_chassis_motor_measure_point(1); 
 	motor_data_2 = get_chassis_motor_measure_point(2); 
 	motor_data_3 = get_chassis_motor_measure_point(3); 
-	PID_init(&motor_pid_0,PID_POSITION,PID_data_0,16000,2000);   //PID½á¹¹Ìå£¬PID¼ÆËãÄ£Ê½£¬PID²ÎÊý£¬×î´óÖµ£¬×î´óIÖµ
-	PID_init(&motor_pid_1,PID_POSITION,PID_data_1,16000,2000); 
-	PID_init(&motor_pid_2,PID_POSITION,PID_data_2,16000,2000); 
-	PID_init(&motor_pid_3,PID_POSITION,PID_data_3,16000,2000); 
+	PID_init(&motor_pid_0,PID_CHANGE_DELTA,PID_data_0,16000,2000);   //PIDï¿½á¹¹ï¿½å£¬PIDï¿½ï¿½ï¿½ï¿½Ä£Ê½ï¿½ï¿½PIDï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½IÖµ
+	PID_init(&motor_pid_1,PID_CHANGE_DELTA,PID_data_1,16000,2000); 
+	PID_init(&motor_pid_2,PID_CHANGE_DELTA,PID_data_2,16000,2000); 
+	PID_init(&motor_pid_3,PID_CHANGE_DELTA,PID_data_3,16000,2000); 
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */

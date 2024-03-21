@@ -1,4 +1,2 @@
-*** Using Compiler 'V5.06 update 6 (build 750)', folder: 'E:\Keil\core\ARM\ARMCC\Bin'
-Build target 'Birth2'
-"Birth2\Birth2.axf" - 0 Error(s), 0 Warning(s).
-Build Time Elapsed:  00:00:00
+Load "Birth2\\Birth2.axf" 
+Erase Done.Programming Done.Verify OK.Flash Load finished at 15:01:18
