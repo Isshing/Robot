@@ -83,6 +83,45 @@ void move_solution(float vx, float vy, float vw){
   set_speed_3 = (vx -vy + vw * rotate_ratio_b) * wheel_rpm_ratio;
 
 }
+int test_flag = 0;
+void test_move(){
+  //  8后 7右
+  vw = 0;
+  if(test_flag == 0){
+    vx = 800;
+    vy = 0;
+    if(TOF_distance8>=600){
+      test_flag = 1;
+    }
+  }else if(test_flag == 1){
+    vx = 0;
+    vy = 800;
+    if(TOF_distance7>=2425){
+      test_flag = 2;
+    }
+  }else if(test_flag == 2){
+    vx = 800;
+    vy = 0;
+    if(TOF_distance8>=2300){
+      test_flag = 3;
+    }
+  }else if(test_flag == 3){
+    vx = 0;
+    vy = -800;
+    if(TOF_distance7<=240){
+      test_flag = 4;
+    }
+  }else if(test_flag == 4){
+    vx = 800;
+    vy = 0;
+    if(TOF_distance8>=3000){
+      test_flag = 5;
+    }
+  }else if(test_flag == 5){
+    vx = 0;
+    vy = 0;
+  }
+}
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void const *argument);
@@ -174,12 +213,12 @@ void StartDefaultTask(void const *argument)
 
     // CAN_cmd_chassis(500, 500, 500, 500);
 
-    // 娴嬭瘯鐢垫満
+    // 
     //  sprintf(buffer7, "%lu\r\n", 100);
     //  sprintf(buffer8, "%lu\r\n", TOF_distance8);
     //  HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)"TOFuart7:", (uint16_t)strlen("TOFuart7:"), (uint32_t)999);
 
-    ANO_sent_data(motor_data_0->speed_rpm, motor_data_1->speed_rpm, motor_data_2->speed_rpm, motor_data_3->speed_rpm, set_speed_0, -set_speed_1, -set_speed_2, set_speed_3, 0, 0);
+    ANO_sent_data(motor_data_0->speed_rpm, motor_data_1->speed_rpm, motor_data_2->speed_rpm, motor_data_3->speed_rpm, (int16)TOF_distance7,(int16)TOF_distance8, -set_speed_2, set_speed_3,0 , 0);
     osDelay(100);
   }
   /* USER CODE END StartDefaultTask */
@@ -200,16 +239,17 @@ void PID_Control_Function(void const *argument)
 
   for (;;)
   {
-		counter++;
-    if(counter<3000){
-      vx = 300;//正为前
-      vy = 0; //正为左
-      vw = 0; //正为顺时针
-    }else{
-      vx = 0;//正为前
-      vy = 300; //正为左
-      vw = 0; //正为顺时针
-    }
+		// counter++;
+    // if(counter<3000){
+    //   vx = 0;//正为前
+    //   vy = 0; //正为左
+    //   vw = 0; //正为顺时针
+    // }else{
+    //   vx = 0;//正为前
+    //   vy = 0; //正为左
+    //   vw = 0; //正为顺时针
+    // }
+    test_move();
     // vx = 0;//正为前
     // vy = 300; //正为左
     // vw = 0; //正为顺时针
