@@ -19,26 +19,37 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
-#include "struct_typedef.h"
+
 /* USER CODE BEGIN 0 */
+#include "struct_typedef.h"
+#include <string.h>
+#include <stdio.h>
 uint8_t uart7Rx[32];         
 uint16_t uart7RxLength;
 
 uint8_t uart8Rx[32];          
 uint16_t uart8RxLength;
 
+uint8_t uart2Rx[32];          
+uint16_t uart2RxLength;
+
 uint8_t uart6Tx[32];          
 uint16_t uart6TxLength;
 
+uint8_t uart6Rx[32];          
+uint16_t uart6RxLength;
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart7;
 UART_HandleTypeDef huart8;
+UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart6;
 DMA_HandleTypeDef hdma_uart7_rx;
 DMA_HandleTypeDef hdma_uart7_tx;
 DMA_HandleTypeDef hdma_uart8_rx;
+DMA_HandleTypeDef hdma_usart2_rx;
 DMA_HandleTypeDef hdma_usart6_tx;
+DMA_HandleTypeDef hdma_usart6_rx;
 
 /* UART7 init function */
 void MX_UART7_Init(void)
@@ -94,6 +105,35 @@ void MX_UART8_Init(void)
   /* USER CODE BEGIN UART8_Init 2 */
 
   /* USER CODE END UART8_Init 2 */
+
+}
+/* USART2 init function */
+
+void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
 
 }
 /* USART6 init function */
@@ -234,6 +274,49 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 
   /* USER CODE END UART8_MspInit 1 */
   }
+  else if(uartHandle->Instance==USART2)
+  {
+  /* USER CODE BEGIN USART2_MspInit 0 */
+
+  /* USER CODE END USART2_MspInit 0 */
+    /* USART2 clock enable */
+    __HAL_RCC_USART2_CLK_ENABLE();
+
+    __HAL_RCC_GPIOD_CLK_ENABLE();
+    /**USART2 GPIO Configuration
+    PD6     ------> USART2_RX
+    PD5     ------> USART2_TX
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_5;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
+    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+    /* USART2 DMA Init */
+    /* USART2_RX Init */
+    hdma_usart2_rx.Instance = DMA1_Stream5;
+    hdma_usart2_rx.Init.Channel = DMA_CHANNEL_4;
+    hdma_usart2_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_usart2_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_usart2_rx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_usart2_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    hdma_usart2_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    hdma_usart2_rx.Init.Mode = DMA_CIRCULAR;
+    hdma_usart2_rx.Init.Priority = DMA_PRIORITY_LOW;
+    hdma_usart2_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    if (HAL_DMA_Init(&hdma_usart2_rx) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(uartHandle,hdmarx,hdma_usart2_rx);
+
+  /* USER CODE BEGIN USART2_MspInit 1 */
+
+  /* USER CODE END USART2_MspInit 1 */
+  }
   else if(uartHandle->Instance==USART6)
   {
   /* USER CODE BEGIN USART6_MspInit 0 */
@@ -272,6 +355,24 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     }
 
     __HAL_LINKDMA(uartHandle,hdmatx,hdma_usart6_tx);
+
+    /* USART6_RX Init */
+    hdma_usart6_rx.Instance = DMA2_Stream1;
+    hdma_usart6_rx.Init.Channel = DMA_CHANNEL_5;
+    hdma_usart6_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_usart6_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_usart6_rx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_usart6_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    hdma_usart6_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    hdma_usart6_rx.Init.Mode = DMA_CIRCULAR;
+    hdma_usart6_rx.Init.Priority = DMA_PRIORITY_LOW;
+    hdma_usart6_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    if (HAL_DMA_Init(&hdma_usart6_rx) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(uartHandle,hdmarx,hdma_usart6_rx);
 
   /* USER CODE BEGIN USART6_MspInit 1 */
 
@@ -323,6 +424,26 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 
   /* USER CODE END UART8_MspDeInit 1 */
   }
+  else if(uartHandle->Instance==USART2)
+  {
+  /* USER CODE BEGIN USART2_MspDeInit 0 */
+
+  /* USER CODE END USART2_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_USART2_CLK_DISABLE();
+
+    /**USART2 GPIO Configuration
+    PD6     ------> USART2_RX
+    PD5     ------> USART2_TX
+    */
+    HAL_GPIO_DeInit(GPIOD, GPIO_PIN_6|GPIO_PIN_5);
+
+    /* USART2 DMA DeInit */
+    HAL_DMA_DeInit(uartHandle->hdmarx);
+  /* USER CODE BEGIN USART2_MspDeInit 1 */
+
+  /* USER CODE END USART2_MspDeInit 1 */
+  }
   else if(uartHandle->Instance==USART6)
   {
   /* USER CODE BEGIN USART6_MspDeInit 0 */
@@ -339,6 +460,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 
     /* USART6 DMA DeInit */
     HAL_DMA_DeInit(uartHandle->hdmatx);
+    HAL_DMA_DeInit(uartHandle->hdmarx);
   /* USER CODE BEGIN USART6_MspDeInit 1 */
 
   /* USER CODE END USART6_MspDeInit 1 */
@@ -352,12 +474,17 @@ void USR_UartInit(void)
 		uart7RxLength = 0;
 		uart8RxLength = 0;
 		uart6TxLength = 0;
+		uart6RxLength = 0;
+		uart2RxLength = 0;
 		HAL_UART_Receive_DMA(&huart7, uart7Rx, 32);
 		HAL_UART_Receive_DMA(&huart8, uart8Rx, 32);		
-		
+		HAL_UART_Receive_DMA(&huart2, uart2Rx, 32);		
+		HAL_UART_Receive_DMA(&huart6, uart6Rx, 32);	
+	
 		__HAL_UART_ENABLE_IT(&huart7, UART_IT_IDLE); 
 		__HAL_UART_ENABLE_IT(&huart8, UART_IT_IDLE); 
 	  __HAL_UART_ENABLE_IT(&huart6, UART_IT_IDLE); 
+	  __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE); 
 }
 
 unsigned char TOF_length = 16;
@@ -397,7 +524,22 @@ unsigned long TOF_read(unsigned char *data){
       }
 			return result;
 }
-
+char jetson_data[32];
+unsigned long Jetson_read(unsigned char *data){
+			unsigned long result = 0;
+			for(int j=0;j<16;j++)
+      {
+				if(data[j] == 'A' && data[j+3] == 'B'){
+					jetson_data[0] = data[j+1];
+					jetson_data[1] = data[j+2];
+					result = 1;
+				}
+      }
+			return result;
+}
+unsigned long jeston_flag = 0;
+char * call_jeston = "OK";
+char buffer6[32];
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {	
 		if(huart == &huart7)
@@ -412,6 +554,16 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			TOF_distance8 = TOF_read(uart8Rx);
 			
 			HAL_UART_Receive_DMA(&huart8, uart8Rx, 32);
+		}
+		else if(huart == &huart6)
+		{
+			jeston_flag = Jetson_read(uart6Rx);
+			if(jeston_flag == 1){
+				sprintf(buffer6, "%s\r\n", jetson_data);
+				HAL_UART_Transmit(&huart6, (uint8_t *)buffer6, strlen(buffer6), 999);
+				HAL_UART_Transmit(&huart6, (uint8_t *)call_jeston, strlen(call_jeston), 999);
+			}
+			HAL_UART_Receive_DMA(&huart6, uart6Rx, 32);
 		}
 		
 }

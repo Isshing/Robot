@@ -22,6 +22,7 @@
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "can.h"
@@ -61,9 +62,9 @@ extern pid_type_def motor_pid_0, motor_pid_1, motor_pid_2, motor_pid_3;
 extern int set_speed_0, set_speed_1, set_speed_2, set_speed_3; // Ä¿ï¿½ï¿½ï¿½Ù¶ï¿½
 extern void ANO_sent_data(int16 A, int16 B, int16 C, int16 D, int16 E, int16 F, int16 G, int16 H, int16 I, int16 J);
 
-float vx = 0;//ÕýÎªÇ°
-float vy = 0; //ÕýÎª×ó
-float vw = 0; //ÕýÎªË³Ê±Õë
+float vx = 0;//ï¿½ï¿½ÎªÇ°
+float vy = 0; //ï¿½ï¿½Îªï¿½ï¿½
+float vw = 0; //ï¿½ï¿½ÎªË³Ê±ï¿½ï¿½
 
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
@@ -75,7 +76,7 @@ void move_solution(float vx, float vy, float vw){
   static float rotate_ratio_f = 1.;
   static float wheel_rpm_ratio = 1.;
   static float rotate_ratio_b = 1.;
-    //wheel_rpm_ratio = 60.0f/(PERIMETER*CHASSIS_DECELE_RATIO); //mm/s = 60/(ÂÖ×ÓÖÜ³¤*¼õËÙ±È(19£º1)) rpm
+    //wheel_rpm_ratio = 60.0f/(PERIMETER*CHASSIS_DECELE_RATIO); //mm/s = 60/(ï¿½ï¿½ï¿½ï¿½ï¿½Ü³ï¿½*ï¿½ï¿½ï¿½Ù±ï¿½(19ï¿½ï¿½1)) rpm
     //rotate_ratio_f =  (WHEELBASE+WHEELTRACK)/2.0f/RADIAN_COEF; //(rad/s)/57.3 = deg/s
   set_speed_0 = (vx + vy + vw * rotate_ratio_f) * wheel_rpm_ratio;
   set_speed_1 = (-vx + vy + vw * rotate_ratio_b) * wheel_rpm_ratio;
@@ -85,7 +86,7 @@ void move_solution(float vx, float vy, float vw){
 }
 int test_flag = 0;
 void test_move(){
-  //  8ºó 7ÓÒ
+  //  8ï¿½ï¿½ 7ï¿½ï¿½
   vw = 0;
   if(test_flag == 0){
     vx = 800;
@@ -124,13 +125,13 @@ void test_move(){
 }
 /* USER CODE END FunctionPrototypes */
 
-void StartDefaultTask(void const *argument);
-void PID_Control_Function(void const *argument);
+void StartDefaultTask(void const * argument);
+void PID_Control_Function(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* GetIdleTaskMemory prototype (linked to static allocation support) */
-void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize);
+void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize );
 
 /* USER CODE BEGIN GET_IDLE_TASK_MEMORY */
 static StaticTask_t xIdleTaskTCBBuffer;
@@ -146,12 +147,11 @@ void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackTyp
 /* USER CODE END GET_IDLE_TASK_MEMORY */
 
 /**
- * @brief  FreeRTOS initialization
- * @param  None
- * @retval None
- */
-void MX_FREERTOS_Init(void)
-{
+  * @brief  FreeRTOS initialization
+  * @param  None
+  * @retval None
+  */
+void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
@@ -184,6 +184,7 @@ void MX_FREERTOS_Init(void)
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
+
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -193,7 +194,7 @@ void MX_FREERTOS_Init(void)
  * @retval None
  */
 /* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const *argument)
+void StartDefaultTask(void const * argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
@@ -218,7 +219,7 @@ void StartDefaultTask(void const *argument)
     //  sprintf(buffer8, "%lu\r\n", TOF_distance8);
     //  HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)"TOFuart7:", (uint16_t)strlen("TOFuart7:"), (uint32_t)999);
 
-    ANO_sent_data(motor_data_0->speed_rpm, motor_data_1->speed_rpm, motor_data_2->speed_rpm, motor_data_3->speed_rpm, (int16)TOF_distance7,(int16)TOF_distance8, -set_speed_2, set_speed_3,0 , 0);
+    ANO_sent_data(motor_data_0->speed_rpm, motor_data_1->speed_rpm, motor_data_2->speed_rpm, motor_data_3->speed_rpm, (int16)TOF_distance7,(int16)TOF_distance8, set_speed_0, set_speed_1,set_speed_2 , set_speed_3);
     osDelay(100);
   }
   /* USER CODE END StartDefaultTask */
@@ -231,8 +232,7 @@ void StartDefaultTask(void const *argument)
  * @retval None
  */
 /* USER CODE END Header_PID_Control_Function */
-int counter = 0;
-void PID_Control_Function(void const *argument)
+void PID_Control_Function(void const * argument)
 {
   /* USER CODE BEGIN PID_Control_Function */
   /* Infinite loop */
@@ -241,26 +241,27 @@ void PID_Control_Function(void const *argument)
   {
 		// counter++;
     // if(counter<3000){
-    //   vx = 0;//ÕýÎªÇ°
-    //   vy = 0; //ÕýÎª×ó
-    //   vw = 0; //ÕýÎªË³Ê±Õë
+    //   vx = 0;//ï¿½ï¿½ÎªÇ°
+    //   vy = 0; //ï¿½ï¿½Îªï¿½ï¿½
+    //   vw = 0; //ï¿½ï¿½ÎªË³Ê±ï¿½ï¿½
     // }else{
-    //   vx = 0;//ÕýÎªÇ°
-    //   vy = 0; //ÕýÎª×ó
-    //   vw = 0; //ÕýÎªË³Ê±Õë
+    //   vx = 0;//ï¿½ï¿½ÎªÇ°
+    //   vy = 0; //ï¿½ï¿½Îªï¿½ï¿½
+    //   vw = 0; //ï¿½ï¿½ÎªË³Ê±ï¿½ï¿½
     // }
     test_move();
-    // vx = 0;//ÕýÎªÇ°
-    // vy = 300; //ÕýÎª×ó
-    // vw = 0; //ÕýÎªË³Ê±Õë
     move_solution(vx, vy, vw);
-    // PID¿ØÖÆ
-    PID_calc(&motor_pid_0, motor_data_0->speed_rpm, set_speed_0);   //×óºó 
-    PID_calc(&motor_pid_1, motor_data_1->speed_rpm, set_speed_1);   //ÓÒºó
-    PID_calc(&motor_pid_2, motor_data_2->speed_rpm, set_speed_2);   //ÓÒÇ°
-    PID_calc(&motor_pid_3, motor_data_3->speed_rpm, set_speed_3);   //×óÇ°
+    vx = 0;
+    vy = 0;
+    vw = 0;
+    
+    // PIDï¿½ï¿½ï¿½ï¿½
+    PID_calc(&motor_pid_0, motor_data_0->speed_rpm, set_speed_0);   //ï¿½ï¿½ï¿? 
+    PID_calc(&motor_pid_1, motor_data_1->speed_rpm, set_speed_1);   //ï¿½Òºï¿½
+    PID_calc(&motor_pid_2, motor_data_2->speed_rpm, set_speed_2);   //ï¿½ï¿½Ç°
+    PID_calc(&motor_pid_3, motor_data_3->speed_rpm, set_speed_3);   //ï¿½ï¿½Ç°
     CAN_cmd_chassis(motor_pid_0.out, motor_pid_1.out, motor_pid_2.out, motor_pid_3.out); 
-
+    //CAN_cmd_up(0x02,0x01,0x20,0x0E,0x10,0x00,0x64);
     osDelay(2);
   }
 
@@ -268,6 +269,6 @@ void PID_Control_Function(void const *argument)
 }
 
 /* Private application code --------------------------------------------------*/
-// /* USER CODE BEGIN Application */
+/* USER CODE BEGIN Application */
 
 /* USER CODE END Application */

@@ -210,7 +210,6 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
     */
     HAL_GPIO_DeInit(GPIOB, GPIO_PIN_12|GPIO_PIN_13);
 
-
     /* CAN2 interrupt Deinit */
     HAL_NVIC_DisableIRQ(CAN2_TX_IRQn);
     HAL_NVIC_DisableIRQ(CAN2_RX0_IRQn);

@@ -44,7 +44,8 @@ static CAN_TxHeaderTypeDef  gimbal_tx_message;
 static uint8_t              gimbal_can_send_data[8];
 static CAN_TxHeaderTypeDef  chassis_tx_message;
 static uint8_t              chassis_can_send_data[8];
-
+static CAN_TxHeaderTypeDef  up_tx_message;
+static uint8_t              up_can_send_data[7];
 /**
   * @brief          hal CAN fifo call back, receive motor data
   * @param[in]      hcan, the point to CAN handle
@@ -78,15 +79,16 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
             get_motor_measure(&motor_chassis[i], rx_data);
             break;
         }
-
+        case CAN_PINTAI_ID:
+        {
+            break;
+        }
         default:
         {
             break;
         }
     }
 }
-
-
 
 /**
   * @brief          send control current of motor (0x205, 0x206, 0x207, 0x208)
@@ -107,7 +109,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 void CAN_cmd_gimbal(int16_t yaw, int16_t pitch, int16_t shoot, int16_t rev)
 {
     uint32_t send_mail_box;
-    gimbal_tx_message.StdId = CAN_GIMBAL_ALL_ID;
+    gimbal_tx_message.StdId = 0x005;
     gimbal_tx_message.IDE = CAN_ID_STD;
     gimbal_tx_message.RTR = CAN_RTR_DATA;
     gimbal_tx_message.DLC = 0x08;
@@ -186,7 +188,22 @@ void CAN_cmd_chassis(int16_t motor1, int16_t motor2, int16_t motor3, int16_t mot
 
     HAL_CAN_AddTxMessage(&CHASSIS_CAN, &chassis_tx_message, chassis_can_send_data, &send_mail_box);
 }
-
+void CAN_cmd_up(int8_t mode, int8_t toward, int8_t resolution, int8_t POS_H,int8_t POS_L,int8_t SPEED_H,int8_t SPEED_L)
+{
+    uint32_t send_mail_box;
+    up_tx_message.StdId = CAN_CHASSIS_ALL_ID;
+    up_tx_message.IDE = CAN_ID_STD;
+    up_tx_message.RTR = CAN_RTR_DATA;
+    up_tx_message.DLC = 0x08;
+    up_can_send_data[0] = mode;
+    up_can_send_data[1] = toward;
+    up_can_send_data[2] = resolution;
+    up_can_send_data[3] = POS_H;
+    up_can_send_data[4] = POS_L;
+    up_can_send_data[5] = SPEED_H;
+    up_can_send_data[6] = SPEED_L;
+    HAL_CAN_AddTxMessage(&CHASSIS_CAN, &up_tx_message, up_can_send_data, &send_mail_box);
+}
 /**
   * @brief          return the yaw 6020 motor data point
   * @param[in]      none

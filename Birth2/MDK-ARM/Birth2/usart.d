@@ -34,3 +34,5 @@ birth2\usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 birth2\usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 birth2\usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 birth2\usart.o: ./bsp/struct_typedef.h
+birth2\usart.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\string.h
+birth2\usart.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\stdio.h
