@@ -40,6 +40,8 @@ typedef enum
     CAN_GIMBAL_ALL_ID = 0x1FF,
 
     CAN_PINTAI_ID = 0x005,
+    CAN_TOF_ID = 0x601,
+
 } can_msg_id_e;
 
 //rm motor data

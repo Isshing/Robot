@@ -241,7 +241,7 @@ void PID_Control_Function(void const * argument)
     PID_calc(&motor_pid_2, motor_data_2->speed_rpm, set_speed_2);   
     PID_calc(&motor_pid_3, motor_data_3->speed_rpm, set_speed_3);   
     //CAN_cmd_chassis(motor_pid_0.out, motor_pid_1.out, motor_pid_2.out, motor_pid_3.out); 
-    CAN_cmd_up(0x01,0x01,0x20,0x00,0x00,0x01,0x64);
+    CAN_cmd_up(0x01,0x00,0x20,0x00,0x00,0x01,0x64);
     
     osDelay(2);
   }
