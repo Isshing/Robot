@@ -45,6 +45,7 @@
 "birth2\chassis_task.o"
 "birth2\user_lib.o"
 "birth2\qmath.o"
+"birth2\imu.o"
 --strict --scatter "Birth2\Birth2.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

@@ -1,6 +1,9 @@
 #ifndef STRUCT_TYPEDEF_H
 #define STRUCT_TYPEDEF_H
 
+#define u8 uint8
+#define u16 uint16
+#define u32 uint32
 
 typedef signed char int8_t;
 typedef signed short int int16_t;
@@ -16,15 +19,15 @@ typedef unsigned char bool_t;
 typedef float fp32;
 typedef double fp64;
 
-typedef unsigned char       uint8;                                              // нч╥Ш╨е  8 bits
-typedef unsigned short int  uint16;                                             // нч╥Ш╨е 16 bits
-typedef unsigned int        uint32;                                             // нч╥Ш╨е 32 bits
-typedef unsigned long long  uint64;                                             // нч╥Ш╨е 64 bits
+typedef unsigned char       uint8;                                              // О©╫ч╥О©╫О©╫О©╫  8 bits
+typedef unsigned short int  uint16;                                             // О©╫ч╥О©╫О©╫О©╫ 16 bits
+typedef unsigned int        uint32;                                             // О©╫ч╥О©╫О©╫О©╫ 32 bits
+typedef unsigned long long  uint64;                                             // О©╫ч╥О©╫О©╫О©╫ 64 bits
 
-typedef signed char         int8;                                               // сп╥Ш╨е  8 bits
-typedef signed short int    int16;                                              // сп╥Ш╨е 16 bits
-typedef signed int          int32;                                              // сп╥Ш╨е 32 bits
-typedef signed long long    int64;                                              // сп╥Ш╨е 64 bits
+typedef signed char         int8;                                               // О©╫п╥О©╫О©╫О©╫  8 bits
+typedef signed short int    int16;                                              // О©╫п╥О©╫О©╫О©╫ 16 bits
+typedef signed int          int32;                                              // О©╫п╥О©╫О©╫О©╫ 32 bits
+typedef signed long long    int64;                                              // О©╫п╥О©╫О©╫О©╫ 64 bits
 #endif
 
 

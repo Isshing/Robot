@@ -59,12 +59,12 @@ extern UART_HandleTypeDef huart7;
 extern UART_HandleTypeDef huart6;
 extern const motor_measure_t *motor_data_0, *motor_data_1, *motor_data_2, *motor_data_3;
 extern pid_type_def motor_pid_0, motor_pid_1, motor_pid_2, motor_pid_3;
-extern int set_speed_0, set_speed_1, set_speed_2, set_speed_3; // Ŀ���ٶ�
+extern int set_speed_0, set_speed_1, set_speed_2, set_speed_3; // ??????
 extern void ANO_sent_data(int16 A, int16 B, int16 C, int16 D, int16 E, int16 F, int16 G, int16 H, int16 I, int16 J);
 
-float vx = 0;//��Ϊǰ
-float vy = 0; //��Ϊ��
-float vw = 0; //��Ϊ˳ʱ��
+float vx = 0;
+float vy = 0;
+float vw = 0;
 
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
@@ -72,11 +72,13 @@ osThreadId PID_ControlHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
+
+
 void move_solution(float vx, float vy, float vw){
   static float rotate_ratio_f = 1.;
   static float wheel_rpm_ratio = 1.;
   static float rotate_ratio_b = 1.;
-    //wheel_rpm_ratio = 60.0f/(PERIMETER*CHASSIS_DECELE_RATIO); //mm/s = 60/(�����ܳ�*���ٱ�(19��1)) rpm
+    //wheel_rpm_ratio = 60.0f/(PERIMETER*CHASSIS_DECELE_RATIO); //mm/s = 60/(???????*?????(19??1)) rpm
     //rotate_ratio_f =  (WHEELBASE+WHEELTRACK)/2.0f/RADIAN_COEF; //(rad/s)/57.3 = deg/s
   set_speed_0 = (vx + vy + vw * rotate_ratio_f) * wheel_rpm_ratio;
   set_speed_1 = (-vx + vy + vw * rotate_ratio_b) * wheel_rpm_ratio;
@@ -86,36 +88,36 @@ void move_solution(float vx, float vy, float vw){
 }
 int test_flag = 0;
 void test_move(){
-  //  8�� 7��
+  //  8?? 7??
   vw = 0;
   if(test_flag == 0){
-    vx = 800;
+    vx = 600;
     vy = 0;
     if(TOF_distance8>=600){
       test_flag = 1;
     }
   }else if(test_flag == 1){
     vx = 0;
-    vy = 800;
+    vy = 600;
     if(TOF_distance7>=2425){
       test_flag = 2;
     }
   }else if(test_flag == 2){
-    vx = 800;
+    vx = 600;
     vy = 0;
     if(TOF_distance8>=2300){
       test_flag = 3;
     }
   }else if(test_flag == 3){
     vx = 0;
-    vy = -800;
+    vy = -600;
     if(TOF_distance7<=240){
       test_flag = 4;
     }
   }else if(test_flag == 4){
     vx = 800;
     vy = 0;
-    if(TOF_distance8>=3000){
+    if(TOF_distance8>=29-00){
       test_flag = 5;
     }
   }else if(test_flag == 5){
@@ -126,6 +128,8 @@ void test_move(){
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void const * argument);
+
+
 void PID_Control_Function(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -206,20 +210,7 @@ void StartDefaultTask(void const * argument)
     // sprintf(buffer8, "%lu\r\n", TOF_distance8);
     //		HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)"TOFuart8:", (uint16_t)strlen("TOFuart8:"), (uint32_t)999);
     //		HAL_UART_Transmit(&huart6, (uint8_t *)buffer8, strlen(buffer8), 999);
-
-    // HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)"TOFuart7:", (uint16_t)strlen("TOFuart7:"), (uint32_t)999);
-
-    // HAL_UART_Transmit((UART_HandleTypeDef *)&huart7, (uint8_t *)"AMMMWSSGSDGC", (uint16_t)strlen("AMMMWSSGSDGC"), (uint32_t)999);
-    //	HAL_UART_Transmit(&huart6, (uint8_t *)buffer7, strlen(buffer7), 999);
-
-    // CAN_cmd_chassis(500, 500, 500, 500);
-
-    // 
-    //  sprintf(buffer7, "%lu\r\n", 100);
-    //  sprintf(buffer8, "%lu\r\n", TOF_distance8);
-    //  HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)"TOFuart7:", (uint16_t)strlen("TOFuart7:"), (uint32_t)999);
-
-    ANO_sent_data(motor_data_0->speed_rpm, motor_data_1->speed_rpm, motor_data_2->speed_rpm, motor_data_3->speed_rpm, (int16)TOF_distance7,(int16)TOF_distance8, set_speed_0, set_speed_1,set_speed_2 , set_speed_3);
+    //ANO_sent_data(motor_data_0->speed_rpm, motor_data_1->speed_rpm, motor_data_2->speed_rpm, motor_data_3->speed_rpm, (int16)TOF_distance7,(int16)TOF_distance8, set_speed_0, set_speed_1,set_speed_2 , set_speed_3);
     osDelay(100);
   }
   /* USER CODE END StartDefaultTask */
@@ -239,32 +230,21 @@ void PID_Control_Function(void const * argument)
 
   for (;;)
   {
-		// counter++;
-    // if(counter<3000){
-    //   vx = 0;//��Ϊǰ
-    //   vy = 0; //��Ϊ��
-    //   vw = 0; //��Ϊ˳ʱ��
-    // }else{
-    //   vx = 0;//��Ϊǰ
-    //   vy = 0; //��Ϊ��
-    //   vw = 0; //��Ϊ˳ʱ��
-    // }
-    test_move();
-    move_solution(vx, vy, vw);
-    vx = 0;
-    vy = 0;
-    vw = 0;
+    // vx = 0;
+    // vy = 0;
+    // vw = 0;
+    //test_move();
+    //move_solution(vx, vy, vw);
+    // PID
+    PID_calc(&motor_pid_0, motor_data_0->speed_rpm, set_speed_0);   
+    PID_calc(&motor_pid_1, motor_data_1->speed_rpm, set_speed_1);   
+    PID_calc(&motor_pid_2, motor_data_2->speed_rpm, set_speed_2);   
+    PID_calc(&motor_pid_3, motor_data_3->speed_rpm, set_speed_3);   
+    //CAN_cmd_chassis(motor_pid_0.out, motor_pid_1.out, motor_pid_2.out, motor_pid_3.out); 
+    CAN_cmd_up(0x01,0x01,0x20,0x00,0x00,0x01,0x64);
     
-    // PID����
-    PID_calc(&motor_pid_0, motor_data_0->speed_rpm, set_speed_0);   //���? 
-    PID_calc(&motor_pid_1, motor_data_1->speed_rpm, set_speed_1);   //�Һ�
-    PID_calc(&motor_pid_2, motor_data_2->speed_rpm, set_speed_2);   //��ǰ
-    PID_calc(&motor_pid_3, motor_data_3->speed_rpm, set_speed_3);   //��ǰ
-    CAN_cmd_chassis(motor_pid_0.out, motor_pid_1.out, motor_pid_2.out, motor_pid_3.out); 
-    //CAN_cmd_up(0x02,0x01,0x20,0x0E,0x10,0x00,0x64);
     osDelay(2);
   }
-
   /* USER CODE END PID_Control_Function */
 }
 

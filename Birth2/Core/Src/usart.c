@@ -557,13 +557,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		}
 		else if(huart == &huart6)
 		{
-			jeston_flag = Jetson_read(uart6Rx);
-			if(jeston_flag == 1){
-				sprintf(buffer6, "%s\r\n", jetson_data);
-				HAL_UART_Transmit(&huart6, (uint8_t *)buffer6, strlen(buffer6), 999);
-				HAL_UART_Transmit(&huart6, (uint8_t *)call_jeston, strlen(call_jeston), 999);
-			}
-			HAL_UART_Receive_DMA(&huart6, uart6Rx, 32);
+      
+			// jeston_flag = Jetson_read(uart6Rx);
+			// if(jeston_flag == 1){
+			// 	sprintf(buffer6, "%s\r\n", jetson_data);
+			// 	HAL_UART_Transmit(&huart6, (uint8_t *)buffer6, strlen(buffer6), 999);
+			// 	HAL_UART_Transmit(&huart6, (uint8_t *)call_jeston, strlen(call_jeston), 999);
+			// }
+			// HAL_UART_Receive_DMA(&huart6, uart6Rx, 32);
 		}
 		
 }
