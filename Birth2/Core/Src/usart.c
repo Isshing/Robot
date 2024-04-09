@@ -24,14 +24,12 @@
 #include "struct_typedef.h"
 #include <string.h>
 #include <stdio.h>
+#include "IMU.h"
 uint8_t uart7Rx[32];         
 uint16_t uart7RxLength;
 
 uint8_t uart8Rx[32];          
 uint16_t uart8RxLength;
-
-uint8_t uart2Rx[32];          
-uint16_t uart2RxLength;
 
 uint8_t uart6Tx[32];          
 uint16_t uart6TxLength;
@@ -47,7 +45,6 @@ UART_HandleTypeDef huart6;
 DMA_HandleTypeDef hdma_uart7_rx;
 DMA_HandleTypeDef hdma_uart7_tx;
 DMA_HandleTypeDef hdma_uart8_rx;
-DMA_HandleTypeDef hdma_usart2_rx;
 DMA_HandleTypeDef hdma_usart6_tx;
 DMA_HandleTypeDef hdma_usart6_rx;
 
@@ -294,25 +291,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-    /* USART2 DMA Init */
-    /* USART2_RX Init */
-    hdma_usart2_rx.Instance = DMA1_Stream5;
-    hdma_usart2_rx.Init.Channel = DMA_CHANNEL_4;
-    hdma_usart2_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
-    hdma_usart2_rx.Init.PeriphInc = DMA_PINC_DISABLE;
-    hdma_usart2_rx.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_usart2_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-    hdma_usart2_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-    hdma_usart2_rx.Init.Mode = DMA_CIRCULAR;
-    hdma_usart2_rx.Init.Priority = DMA_PRIORITY_LOW;
-    hdma_usart2_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
-    if (HAL_DMA_Init(&hdma_usart2_rx) != HAL_OK)
-    {
-      Error_Handler();
-    }
-
-    __HAL_LINKDMA(uartHandle,hdmarx,hdma_usart2_rx);
-
+    /* USART2 interrupt Init */
+    HAL_NVIC_SetPriority(USART2_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(USART2_IRQn);
   /* USER CODE BEGIN USART2_MspInit 1 */
 
   /* USER CODE END USART2_MspInit 1 */
@@ -438,8 +419,8 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     */
     HAL_GPIO_DeInit(GPIOD, GPIO_PIN_6|GPIO_PIN_5);
 
-    /* USART2 DMA DeInit */
-    HAL_DMA_DeInit(uartHandle->hdmarx);
+    /* USART2 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(USART2_IRQn);
   /* USER CODE BEGIN USART2_MspDeInit 1 */
 
   /* USER CODE END USART2_MspDeInit 1 */
@@ -475,10 +456,8 @@ void USR_UartInit(void)
 		uart8RxLength = 0;
 		uart6TxLength = 0;
 		uart6RxLength = 0;
-		uart2RxLength = 0;
 		HAL_UART_Receive_DMA(&huart7, uart7Rx, 32);
-		HAL_UART_Receive_DMA(&huart8, uart8Rx, 32);		
-		HAL_UART_Receive_DMA(&huart2, uart2Rx, 32);		
+		HAL_UART_Receive_DMA(&huart8, uart8Rx, 32);			
 		HAL_UART_Receive_DMA(&huart6, uart6Rx, 32);	
 	
 		__HAL_UART_ENABLE_IT(&huart7, UART_IT_IDLE); 
@@ -487,43 +466,7 @@ void USR_UartInit(void)
 	  __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE); 
 }
 
-unsigned char TOF_length = 16;
-unsigned char TOF_header[3]={0x57,0x00,0xFF};
-unsigned long TOF_system_time = 0;
-unsigned long TOF_distance8 = 0;
-unsigned long TOF_distance7 = 0;
-unsigned long TOF_distance3 = 0;
-unsigned char TOF_status = 0;
-unsigned int TOF_signal = 0;
-unsigned char TOF_check = 0;
-int verifyCheckSum(unsigned char data[], unsigned char len){
-  TOF_check = 0;
-  for(int k=0;k<len-1;k++)
-  {
-      TOF_check += data[k];
-  }
-  if(TOF_check == data[len-1])
-  {
-      return 1;    
-  }else{
-      return 0;  
-  }
-}
-unsigned long TOF_read(unsigned char *data){
-			unsigned long result = 0;
-			for(int j=0;j<16;j++)
-      {
-        if( (data[j]==TOF_header[0] && data[j+1]==TOF_header[1] && data[j+2]==TOF_header[2]) && (verifyCheckSum(&data[j],TOF_length)))
-        {
-          if(((data[j+12]) | (data[j+13]<<8) )!=0)
-          {
-            result = (data[j+8]) | (data[j+9]<<8) | (data[j+10]<<16);
-          }
-          break;
-        }
-      }
-			return result;
-}
+
 char jetson_data[32];
 unsigned long Jetson_read(unsigned char *data){
 			unsigned long result = 0;
@@ -540,38 +483,61 @@ unsigned long Jetson_read(unsigned char *data){
 unsigned long jeston_flag = 0;
 char * call_jeston = "OK";
 char buffer6[32];
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{	
+uint8_t count_imu = 0;
+uint8_t last_rsnum = 0;
+uint8_t rsimu_flag = 0, rsacc_flag = 0;
+uint8_t RxByte;
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		if(huart == &huart7)
 		{
-			TOF_distance7 = TOF_read(uart7Rx);
 			//AD_main_Filter(TOF_distance7,TOF_distance8);
 			
 			HAL_UART_Receive_DMA(&huart7, uart7Rx, 32);
 		}
 		else if(huart == &huart8)
 		{
-			TOF_distance8 = TOF_read(uart8Rx);
-			
+
 			HAL_UART_Receive_DMA(&huart8, uart8Rx, 32);
 		}
 		else if(huart == &huart6)
 		{
-      
-			// jeston_flag = Jetson_read(uart6Rx);
-			// if(jeston_flag == 1){
-			// 	sprintf(buffer6, "%s\r\n", jetson_data);
-			// 	HAL_UART_Transmit(&huart6, (uint8_t *)buffer6, strlen(buffer6), 999);
-			// 	HAL_UART_Transmit(&huart6, (uint8_t *)call_jeston, strlen(call_jeston), 999);
-			// }
-			// HAL_UART_Receive_DMA(&huart6, uart6Rx, 32);
+			HAL_UART_Receive_DMA(&huart6, uart6Rx, 32);
 		}
-		
+    else if(huart == &huart2) {
+        Fd_data[count_imu] = RxByte;
+        if (((last_rsnum == FRAME_END) && (RxByte == FRAME_HEAD)) || count_imu > 0) {
+            count_imu++;
+            if (count_imu == 1) { // 数据类型判断应当在接收到足够的字节后进行
+                if (Fd_data[1] == TYPE_IMU) rsimu_flag = 1;
+                else if (Fd_data[1] == TYPE_AHRS) rsacc_flag = 1;
+            }
+            if (rsimu_flag == 1 && count_imu == IMU_RS) {
+                count_imu = 0;
+                rsimu_flag = 0;
+                rs_imutype = 1;
+                if (Fd_data[IMU_RS - 1] == FRAME_END) {
+                    memcpy(Fd_rsimu, Fd_data, IMU_RS);
+                }
+            } else if (rsacc_flag == 1 && count_imu == AHRS_RS) {
+                count_imu = 0;
+                rsacc_flag = 0;
+                rs_ahrstype = 1;
+                if (Fd_data[AHRS_RS - 1] == FRAME_END) {
+                    memcpy(Fd_rsahrs, Fd_data, AHRS_RS);
+                }
+                memset(Fd_data, 0, sizeof(Fd_data)); // 清空接收缓冲区
+            }
+        } else {
+            count_imu = 0; // 重置计数器
+        }
+        last_rsnum = RxByte;
+        // 重新启动UART接收
+				
+				
+        HAL_UART_Receive_IT(&huart2, &RxByte, 1);
+				
+    }
 }
-
-
-
-
 
 
 #define BYTE0(dwTemp)       ( *( (char *)(&dwTemp)    ) )     /*!< uint32_t 数据拆分 byte0  */

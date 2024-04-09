@@ -37,7 +37,10 @@ motor data,  0:chassis motor1 3508;1:chassis motor3 3508;2:chassis motor3 3508;3
 ???????, 0:??????1 3508???,  1:??????2 3508???,2:??????3 3508???,3:??????4 3508???;
 4:yaw?????? 6020???; 5:pitch?????? 6020???; 6:??????? 2006???*/
 motor_measure_t motor_chassis[7];
-
+uint16 TOF1 = 0;
+uint16 TOF2 = 0;
+uint16 TOF3 = 0;
+uint16 TOF4 = 0;
 static CAN_TxHeaderTypeDef gimbal_tx_message;
 static uint8_t gimbal_can_send_data[8];
 static CAN_TxHeaderTypeDef chassis_tx_message;
@@ -81,6 +84,14 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   {
     break;
   }
+  case CAN_TOF_ID:
+  {
+    TOF1 = (uint16_t)(rx_data[0]<<8 | rx_data[1]);
+    TOF2 = (uint16_t)(rx_data[2]<<8 | rx_data[3]);
+    TOF3 = (uint16_t)(rx_data[4]<<8 | rx_data[5]);
+    TOF4 = (uint16_t)(rx_data[6]<<8 | rx_data[7]);
+    break;
+  }
   default:
   {
     break;
@@ -96,14 +107,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
  * @param[in]      rev: (0x208) reserve motor control current
  * @retval         none
  */
-/**
- * @brief          ?????????????(0x205,0x206,0x207,0x208)
- * @param[in]      yaw: (0x205) 6020??????????, ??�� [-30000,30000]
- * @param[in]      pitch: (0x206) 6020??????????, ??�� [-30000,30000]
- * @param[in]      shoot: (0x207) 2006??????????, ??�� [-10000,10000]
- * @param[in]      rev: (0x208) ????????????????
- * @retval         none
- */
+
 void CAN_cmd_gimbal(int16_t yaw, int16_t pitch, int16_t shoot, int16_t rev)
 {
   uint32_t send_mail_box;
@@ -127,11 +131,7 @@ void CAN_cmd_gimbal(int16_t yaw, int16_t pitch, int16_t shoot, int16_t rev)
  * @param[in]      none
  * @retval         none
  */
-/**
- * @brief          ????ID?0x700??CAN??,????????3508??????????????ID
- * @param[in]      none
- * @retval         none
- */
+
 void CAN_cmd_chassis_reset_ID(void)
 {
   uint32_t send_mail_box;

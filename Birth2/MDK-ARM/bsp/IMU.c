@@ -1,5 +1,7 @@
 #include "IMU.h"
 #include <math.h>
+#define M_PI 3.14159265358979323846
+
 SEND_DATA Send_Data;
 RECEIVE_DATA Receive_Data;
 u8 ttl_receive;
@@ -63,6 +65,14 @@ long long timestamp(u8 Data_1,u8 Data_2,u8 Data_3,u8 Data_4)
 /*******************************
 16进制转浮点型数据
 *******************************/
+float roll_deg;
+float pitch_deg;
+float heading_deg;
+float gyro_x_deg;
+float gyro_y_deg;
+float gyro_z_deg;
+bool_t initial_flag=0;
+float  initial_angle;
 u8 TTL_Hex2Dec(void)  
 {
 	 if(rs_ahrstype==1)
@@ -77,12 +87,28 @@ u8 TTL_Hex2Dec(void)
 		AHRSData_Packet.Pitch=DATA_Trans(Fd_rsahrs[23],Fd_rsahrs[24],Fd_rsahrs[25],Fd_rsahrs[26]);     //俯仰角
 		AHRSData_Packet.Heading=DATA_Trans(Fd_rsahrs[27],Fd_rsahrs[28],Fd_rsahrs[29],Fd_rsahrs[30]);	 //偏航角
 			
-		AHRSData_Packet.Qw=DATA_Trans(Fd_rsahrs[31],Fd_rsahrs[32],Fd_rsahrs[33],Fd_rsahrs[34]);  //四元数
-		AHRSData_Packet.Qx=DATA_Trans(Fd_rsahrs[35],Fd_rsahrs[36],Fd_rsahrs[37],Fd_rsahrs[38]);
-		AHRSData_Packet.Qy=DATA_Trans(Fd_rsahrs[39],Fd_rsahrs[40],Fd_rsahrs[41],Fd_rsahrs[42]);
-		AHRSData_Packet.Qz=DATA_Trans(Fd_rsahrs[43],Fd_rsahrs[44],Fd_rsahrs[45],Fd_rsahrs[46]);
-		AHRSData_Packet.Timestamp=timestamp(Fd_rsahrs[47],Fd_rsahrs[48],Fd_rsahrs[49],Fd_rsahrs[50]);   //时间戳
-		AHRSData2PC();
+    roll_deg = AHRSData_Packet.Roll * (180.0 / M_PI);
+		if (roll_deg > 180) {
+        roll_deg -= 360;
+    } else if (roll_deg < -180) {
+        roll_deg += 360;
+    }
+    pitch_deg = AHRSData_Packet.Pitch * (180.0 / M_PI);
+		if (pitch_deg > 180) {
+       pitch_deg -= 360;
+    } else if (pitch_deg < -180) {
+        pitch_deg += 360;
+    }
+    heading_deg = AHRSData_Packet.Heading * (180.0 / M_PI);
+		if (heading_deg > 180) {
+       heading_deg -= 360;
+    } else if (heading_deg < -180) {
+       heading_deg += 360;
+    }
+		if(initial_flag==0){
+			initial_angle = heading_deg;
+			initial_flag = 1;
+			}
 		}
 	rs_ahrstype=0;
  }
@@ -98,12 +124,10 @@ u8 TTL_Hex2Dec(void)
 		IMUData_Packet.accelerometer_y=DATA_Trans(Fd_rsimu[23],Fd_rsimu[24],Fd_rsimu[25],Fd_rsimu[26]);
 		IMUData_Packet.accelerometer_z=DATA_Trans(Fd_rsimu[27],Fd_rsimu[28],Fd_rsimu[29],Fd_rsimu[30]);
 
-		IMUData_Packet.magnetometer_x=DATA_Trans(Fd_rsimu[31],Fd_rsimu[32],Fd_rsimu[33],Fd_rsimu[34]);  //磁力计数据
-		IMUData_Packet.magnetometer_y=DATA_Trans(Fd_rsimu[35],Fd_rsimu[36],Fd_rsimu[37],Fd_rsimu[38]);
-		IMUData_Packet.magnetometer_z=DATA_Trans(Fd_rsimu[39],Fd_rsimu[40],Fd_rsimu[41],Fd_rsimu[42]);
-			
-		IMUData_Packet.Timestamp=timestamp(Fd_rsimu[55],Fd_rsimu[56],Fd_rsimu[57],Fd_rsimu[58]);   //时间戳
-    IMUData2PC();
+		gyro_x_deg = IMUData_Packet.gyroscope_x * (180.0 / 3.14159265358979323846);
+    gyro_y_deg = IMUData_Packet.gyroscope_y * (180.0 / 3.14159265358979323846);
+    gyro_z_deg = IMUData_Packet.gyroscope_z * (180.0 / 3.14159265358979323846);
+
 		}
 		rs_imutype=0;
  }

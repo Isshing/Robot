@@ -112,5 +112,13 @@ u8 TTL_Hex2Dec(void);
 float Vz_to_Akm_Angle(float Vx, float Vz);
 float XYZ_Target_Speed_transition(u8 High,u8 Low);
 u8 Check_Sum(unsigned char Count_Number,unsigned char Mode);
-
+extern u8 Fd_data[64];
+extern u8 Fd_rsimu[64];
+extern u8 Fd_rsahrs[56];
+extern int rs_imutype;
+extern int rs_ahrstype;
+extern float gyro_z_deg;
+extern float heading_deg;
+extern float initial_angle;
+extern bool_t initial_flag;
 #endif
