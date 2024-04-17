@@ -46,6 +46,7 @@
 "birth2\user_lib.o"
 "birth2\qmath.o"
 "birth2\imu.o"
+"birth2\move_way.o"
 "birth2\retarget_io.o"
 --library_type=microlib --strict --scatter "Birth2\Birth2.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols

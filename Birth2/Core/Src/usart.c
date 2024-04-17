@@ -467,12 +467,12 @@ void USR_UartInit(void)
 }
 
 
-char jetson_data[32];
+char jetson_data[2];
 unsigned long Jetson_read(unsigned char *data){
 			unsigned long result = 0;
 			for(int j=0;j<16;j++)
       {
-				if(data[j] == 'A' && data[j+3] == 'B'){
+				if(data[j] == 'A' && data[j+2] == 'B'){
 					jetson_data[0] = data[j+1];
 					jetson_data[1] = data[j+2];
 					result = 1;
@@ -480,7 +480,7 @@ unsigned long Jetson_read(unsigned char *data){
       }
 			return result;
 }
-unsigned long jeston_flag = 0;
+unsigned int jeston_flag = 0;
 char * call_jeston = "OK";
 char buffer6[32];
 uint8_t count_imu = 0;
@@ -501,6 +501,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		}
 		else if(huart == &huart6)
 		{
+			Jetson_read(uart6Rx);
+			if(jetson_data[0] == 'S' && jetson_data[0] == 'T'){
+				jeston_flag = 1;
+			}else if(jetson_data[0] == 'R' && jetson_data[0] == 'G'){
+				jeston_flag = 0;
+			}
 			HAL_UART_Receive_DMA(&huart6, uart6Rx, 32);
 		}
     else if(huart == &huart2) {

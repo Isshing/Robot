@@ -31,6 +31,7 @@
 #include "CAN_receive.h"
 #include "pid.h"
 #include "IMU.h"
+#include "move_way.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,22 +54,20 @@
 extern unsigned char uart8Rx[32];
 extern unsigned char uart6Tx[32];
 extern unsigned char uart7Rx[32];
-extern unsigned long TOF_distance8;
-extern unsigned long TOF_distance7;
 extern UART_HandleTypeDef huart8;
 extern UART_HandleTypeDef huart7;
 extern UART_HandleTypeDef huart6;
 extern UART_HandleTypeDef huart2;
+extern unsigned int jeston_flag;
 extern uint8_t RxByte;
-extern const motor_measure_t *motor_data_0, *motor_data_1, *motor_data_2, *motor_data_3;
-extern pid_type_def motor_pid_0, motor_pid_1, motor_pid_2, motor_pid_3,angle_pid;
-extern int set_speed_0, set_speed_1, set_speed_2, set_speed_3;
 extern void ANO_sent_data(int16 A, int16 B, int16 C, int16 D, int16 E, int16 F, int16 G, int16 H, int16 I, int16 J);
-
+extern pid_type_def motor_pid_0,motor_pid_1,motor_pid_2,motor_pid_3;		
 float vx = 0;
 float vy = 0;
 float vw = 0;
-
+int set_v,set_spd[4];
+extern float set_speed_0,set_speed_1,set_speed_2,set_speed_3;
+extern motor_measure_t *motor_data_0,*motor_data_1,*motor_data_2,*motor_data_3;
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId PID_ControlHandle;
@@ -83,51 +82,13 @@ void move_solution(float vx, float vy, float vw){
   static float rotate_ratio_b = 1.;
     //wheel_rpm_ratio = 60.0f/(PERIMETER*CHASSIS_DECELE_RATIO); //mm/s = 60/(???????*?????(19??1)) rpm
     //rotate_ratio_f =  (WHEELBASE+WHEELTRACK)/2.0f/RADIAN_COEF; //(rad/s)/57.3 = deg/s
-  set_speed_0 = (vx + vy + vw * rotate_ratio_f) * wheel_rpm_ratio;
-  set_speed_1 = (-vx + vy + vw * rotate_ratio_b) * wheel_rpm_ratio;
-  set_speed_2 = (-vx - vy + vw * rotate_ratio_f) * wheel_rpm_ratio;
-  set_speed_3 = (vx -vy + vw * rotate_ratio_b) * wheel_rpm_ratio;
-
+    set_speed_0 = (-vy + vx + vw * rotate_ratio_f) * wheel_rpm_ratio;
+    set_speed_1 = (vy + vx + vw * rotate_ratio_b) * wheel_rpm_ratio;
+    set_speed_2 = (vy - vx + vw * rotate_ratio_f) * wheel_rpm_ratio;
+    set_speed_3 = (-vy - vx + vw * rotate_ratio_b) * wheel_rpm_ratio;
 }
-//int test_flag = 0;
-//void test_move(){
-//  //  8?? 7??
-//  vw = 0;
-//  if(test_flag == 0){
-//    vx = 600;
-//    vy = 0;
-//    if(TOF_distance8>=600){
-//      test_flag = 1;
-//    }
-//  }else if(test_flag == 1){
-//    vx = 0;
-//    vy = 600;
-//    if(TOF_distance7>=2425){
-//      test_flag = 2;
-//    }
-//  }else if(test_flag == 2){
-//    vx = 600;
-//    vy = 0;
-//    if(TOF_distance8>=2300){
-//      test_flag = 3;
-//    }
-//  }else if(test_flag == 3){
-//    vx = 0;
-//    vy = -600;
-//    if(TOF_distance7<=240){
-//      test_flag = 4;
-//    }
-//  }else if(test_flag == 4){
-//    vx = 800;
-//    vy = 0;
-//    if(TOF_distance8>=29-00){
-//      test_flag = 5;
-//    }
-//  }else if(test_flag == 5){
-//    vx = 0;
-//    vy = 0;
-//  }
-//}
+
+
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void const * argument);
@@ -179,11 +140,11 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 256);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of PID_Control */
-  osThreadDef(PID_Control, PID_Control_Function, osPriorityIdle, 0, 128);
+  osThreadDef(PID_Control, PID_Control_Function, osPriorityIdle, 0, 256);
   PID_ControlHandle = osThreadCreate(osThread(PID_Control), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -211,10 +172,13 @@ void StartDefaultTask(void const * argument)
     // sprintf(buffer8, "%lu\r\n", TOF_distance8);
     //		HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)"TOFuart8:", (uint16_t)strlen("TOFuart8:"), (uint32_t)999);
     //		HAL_UART_Transmit(&huart6, (uint8_t *)buffer8, strlen(buffer8), 999);
-    ANO_sent_data(motor_data_0->speed_rpm, motor_data_1->speed_rpm, motor_data_2->speed_rpm, motor_data_3->speed_rpm, (int16)vw,(int16)heading_deg, set_speed_0, set_speed_1,set_speed_2 , set_speed_3);
-		//HAL_UART_Receive_IT(&huart2, &RxByte, 1);
+    //ANO_sent_data(motor_data_0->speed_rpm, motor_data_1->speed_rpm, motor_data_2->speed_rpm, motor_data_3->speed_rpm, (int16)vw,(int16)heading_deg, set_speed_0, set_speed_1,set_speed_2 , set_speed_3);
+		//ANO_sent_data(motor_data_0->speed_rpm, set_speed_0,(int16)motor_pid_0.Pout,(int16)gein, (int16)bss,(int16)motor_pid_0.Iout, (int16)motor_pid_0.Ki,(int16)motor_pid_0.Kp ,(int16)motor_pid_0.Pout ,(int16)motor_pid_0.Dout);
+		//ANO_sent_data(motor_data_0->speed_rpm, set_speed_0,(int16)kpdata,(int16)kidata, (int16)kddata,(int16)outdata, 0,0 ,0,0);
+		ANO_sent_data(motor_data_0->speed_rpm,(int16)set_speed_0, (int16)motor_pid_0.out,(int16)motor_pid_0.Pout, (int16)motor_pid_0.Iout,(int16)motor_pid_0.Dout, (int16)motor_pid_0.error[0],0 ,0,0);
+
+		
 		//TTL_Hex2Dec();
-		TTL_Hex2Dec();
     osDelay(10);
   }
   /* USER CODE END StartDefaultTask */
@@ -222,11 +186,12 @@ void StartDefaultTask(void const * argument)
 
 /* USER CODE BEGIN Header_PID_Control_Function */
 /**
- * @brief Function implementing the PID_Control thread.
+ * @brief Function implementing the PID_Control thread.=
  * @param argument: Not used 
  * @retval None
  */
 /* USER CODE END Header_PID_Control_Function */
+int turning = 0;
 void PID_Control_Function(void const * argument)
 {
   /* USER CODE BEGIN PID_Control_Function */
@@ -234,22 +199,19 @@ void PID_Control_Function(void const * argument)
 
   for (;;)
   {
-		if(initial_flag==1){
-			vx = 350;
-			vy = 0;
-			// vw = 0;
-			//test_move();
-			vw = PID_calc(&angle_pid, heading_deg,initial_angle);
-			move_solution(vx, vy, vw);
-			// PID
-			PID_calc(&motor_pid_0, motor_data_0->speed_rpm, set_speed_0);   
-			PID_calc(&motor_pid_1, motor_data_1->speed_rpm, set_speed_1);   
-			PID_calc(&motor_pid_2, motor_data_2->speed_rpm, set_speed_2);   
-			PID_calc(&motor_pid_3, motor_data_3->speed_rpm, set_speed_3);   
-			CAN_cmd_chassis(motor_pid_0.out, motor_pid_1.out, motor_pid_2.out, motor_pid_3.out); 
-    //CAN_cmd_up(0x01,0x01,0x20,0x00,0x00,0x01,0x64);
-			CAN_cmd_up(0x04,0x01,0x20,0x03,0xE8,0x00,0x64);
+		//vx = 400;
+		if(TOF1<50){
+			HAL_UART_Transmit(&huart6, (uint8_t *)"N", strlen("N"), 999);
 		}
+		vy = (jeston_flag == 1) ? 0 : 400;
+		move_solution(vx,vy,vw);
+		PID_calc(&motor_pid_0, motor_data_0->speed_rpm, set_speed_0); 
+		PID_calc(&motor_pid_1, motor_data_1->speed_rpm, set_speed_1); 
+		PID_calc(&motor_pid_2, motor_data_2->speed_rpm, set_speed_2); 
+		PID_calc(&motor_pid_3, motor_data_3->speed_rpm, set_speed_3); 
+		
+		CAN_cmd_chassis(motor_pid_0.out,motor_pid_1.out, motor_pid_2.out, motor_pid_3.out); 
+
     osDelay(2);
   }
   /* USER CODE END PID_Control_Function */

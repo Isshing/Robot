@@ -1675,6 +1675,16 @@
               <FileType>5</FileType>
               <FilePath>.\bsp\IMU.h</FilePath>
             </File>
+            <File>
+              <FileName>move_way.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\bsp\move_way.c</FilePath>
+            </File>
+            <File>
+              <FileName>move_way.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\bsp\move_way.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

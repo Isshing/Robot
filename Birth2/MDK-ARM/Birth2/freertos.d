@@ -55,3 +55,4 @@ birth2\freertos.o: ./bsp/pid.h
 birth2\freertos.o: ./bsp/Qmath.h
 birth2\freertos.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\math.h
 birth2\freertos.o: ./bsp/IMU.h
+birth2\freertos.o: ./bsp/move_way.h
