@@ -74,7 +74,7 @@ const fp32 PID_data_3[8]={4.4f, 0.05f, 3.0f, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_k
 //const fp32 PID_data_1[8]={3, 0, 0, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
 //const fp32 PID_data_2[8]={3, 1., 0, 1, 2, 0.7, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
 //const fp32 PID_data_3[8]={3, 1., 0, 1, 2, 0.7, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
-//const fp32 PID_data_4[8]={40, 0, 0, 8, 0 , 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
+const fp32 PID_data_4[8]={40, 0, 0, 8, 0 , 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
 /* USER CODE END 0 */
 
 /**
@@ -124,7 +124,7 @@ int main(void)
 	PID_init(&motor_pid_1,PID_POSITION,PID_data_1,4000,3000); 
 	PID_init(&motor_pid_2,PID_POSITION,PID_data_2,4000,3000); 
 	PID_init(&motor_pid_3,PID_POSITION,PID_data_3,4000,3000); 
-//	PID_init(&angle_pid,PID_CHANGE_DELTA,PID_data_4,2200,1800); 
+  PID_init(&angle_pid,PID_CHANGE_DELTA,PID_data_4,2200,1800); 
 	
   /* USER CODE END 2 */
 

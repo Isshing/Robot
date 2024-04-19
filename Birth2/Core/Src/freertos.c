@@ -61,13 +61,18 @@ extern UART_HandleTypeDef huart2;
 extern unsigned int jeston_flag;
 extern uint8_t RxByte;
 extern void ANO_sent_data(int16 A, int16 B, int16 C, int16 D, int16 E, int16 F, int16 G, int16 H, int16 I, int16 J);
-extern pid_type_def motor_pid_0,motor_pid_1,motor_pid_2,motor_pid_3;		
+extern pid_type_def motor_pid_0,motor_pid_1,motor_pid_2,motor_pid_3,angle_pid;		
 float vx = 0;
 float vy = 0;
 float vw = 0;
 int set_v,set_spd[4];
+extern uint8_t uart6Rx[32];          
+extern uint16_t uart6RxLength;
 extern float set_speed_0,set_speed_1,set_speed_2,set_speed_3;
 extern motor_measure_t *motor_data_0,*motor_data_1,*motor_data_2,*motor_data_3;
+extern int test_flag;
+extern char jetson_data[2];
+extern void Jetson_read(unsigned char *data);
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId PID_ControlHandle;
@@ -164,6 +169,7 @@ void StartDefaultTask(void const * argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
+	int st = 0;
   for (;;)
   {
     // char buffer8[32];
@@ -175,10 +181,27 @@ void StartDefaultTask(void const * argument)
     //ANO_sent_data(motor_data_0->speed_rpm, motor_data_1->speed_rpm, motor_data_2->speed_rpm, motor_data_3->speed_rpm, (int16)vw,(int16)heading_deg, set_speed_0, set_speed_1,set_speed_2 , set_speed_3);
 		//ANO_sent_data(motor_data_0->speed_rpm, set_speed_0,(int16)motor_pid_0.Pout,(int16)gein, (int16)bss,(int16)motor_pid_0.Iout, (int16)motor_pid_0.Ki,(int16)motor_pid_0.Kp ,(int16)motor_pid_0.Pout ,(int16)motor_pid_0.Dout);
 		//ANO_sent_data(motor_data_0->speed_rpm, set_speed_0,(int16)kpdata,(int16)kidata, (int16)kddata,(int16)outdata, 0,0 ,0,0);
-		ANO_sent_data(motor_data_0->speed_rpm,(int16)set_speed_0, (int16)motor_pid_0.out,(int16)motor_pid_0.Pout, (int16)motor_pid_0.Iout,(int16)motor_pid_0.Dout, (int16)motor_pid_0.error[0],0 ,0,0);
+		//ANO_sent_data(motor_data_0->speed_rpm,(int16)set_speed_0, (int16)motor_pid_0.out,(int16)motor_pid_0.Pout, (int16)motor_pid_0.Iout,(int16)motor_pid_0.Dout, (int16)motor_pid_0.error[0],0 ,0,0);
 
-		
-		//TTL_Hex2Dec();
+			if(jetson_data[0] == 'O' && jetson_data[1] == 'K'){
+				jeston_flag = 1;
+				st = 1;
+			}
+			else if(jetson_data[0] == 'S' && jetson_data[1] == 'T'){
+				jeston_flag = 2;
+				st = 1;
+			}else if(jetson_data[0] == 'R' && jetson_data[1] == 'G'){
+				jeston_flag = 3;
+				st = 1;
+				
+			}
+			if(st == 1){
+				st = 0;
+				memset(uart6Rx,0,sizeof(uart6Rx));
+				memset(jetson_data,0,sizeof(jetson_data));
+				HAL_UART_Transmit(&huart6, (uint8_t *)"AOKB", strlen("AOKB"), 999);
+			}
+		TTL_Hex2Dec();
     osDelay(10);
   }
   /* USER CODE END StartDefaultTask */
@@ -200,18 +223,33 @@ void PID_Control_Function(void const * argument)
   for (;;)
   {
 		//vx = 400;
-		if(TOF1<50){
-			HAL_UART_Transmit(&huart6, (uint8_t *)"N", strlen("N"), 999);
+		if(initial_flag == 1){
+			Jetson_read(uart6Rx);
+			if(jeston_flag == 0){
+				vy = 400;
+				if(TOF1>=1500){HAL_UART_Transmit(&huart6, (uint8_t *)"ANB", strlen("ANB"), 999);}			
+			}else if(jeston_flag == 1){
+				vy = -300;
+			}else if(jeston_flag == 2){
+				vy = 0;
+			}else if(jeston_flag == 3){
+				vy = -300;
+			}
+//			if(test_flag == 0){
+//				move_to_desk();
+//			}else if(test_flag == 1){
+//				 move_to_container();
+//			}
+			//vy = 400; // 1heng
+			
+			//vw = PID_calc(&angle_pid, heading_deg,initial_angle);
+			move_solution(vx,vy,vw);
+			PID_calc(&motor_pid_0, motor_data_0->speed_rpm, set_speed_0); 
+			PID_calc(&motor_pid_1, motor_data_1->speed_rpm, set_speed_1); 
+			PID_calc(&motor_pid_2, motor_data_2->speed_rpm, set_speed_2); 
+			PID_calc(&motor_pid_3, motor_data_3->speed_rpm, set_speed_3); 
+			CAN_cmd_chassis(motor_pid_0.out,motor_pid_1.out, motor_pid_2.out, motor_pid_3.out); 
 		}
-		vy = (jeston_flag == 1) ? 0 : 400;
-		move_solution(vx,vy,vw);
-		PID_calc(&motor_pid_0, motor_data_0->speed_rpm, set_speed_0); 
-		PID_calc(&motor_pid_1, motor_data_1->speed_rpm, set_speed_1); 
-		PID_calc(&motor_pid_2, motor_data_2->speed_rpm, set_speed_2); 
-		PID_calc(&motor_pid_3, motor_data_3->speed_rpm, set_speed_3); 
-		
-		CAN_cmd_chassis(motor_pid_0.out,motor_pid_1.out, motor_pid_2.out, motor_pid_3.out); 
-
     osDelay(2);
   }
   /* USER CODE END PID_Control_Function */
