@@ -34,3 +34,6 @@ birth2\can_receive.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
 birth2\can_receive.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 birth2\can_receive.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 birth2\can_receive.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+birth2\can_receive.o: bsp\pid.h
+birth2\can_receive.o: bsp\Qmath.h
+birth2\can_receive.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\math.h

@@ -39,6 +39,12 @@ typedef struct
 
 } pid_type_def;
 
+#define SAMPLE_SIZE 10  // 定义样本数组的大小
+typedef struct {
+    float samples[SAMPLE_SIZE];
+    int index;
+} MovingAverageFilter_t;
+
 extern void PID_init(pid_type_def *pid, uint8_t mode, const fp32 PID[3], fp32 max_out, fp32 max_iout);
 
 /**
@@ -63,5 +69,7 @@ extern void PID_clear(pid_type_def *pid);
 #define MAX(a, b)                 (((a) > (b)) ? (a) : (b))
 #define MINMAX(input, low, upper) MIN(MAX(input, low), upper)
 
-
+extern float movingAverageFilter(int motor_index, float new_sample);
+extern void initFilters(void);
+extern MovingAverageFilter_t filters[4];
 #endif

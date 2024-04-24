@@ -19,7 +19,7 @@
 
 #include "CAN_receive.h"
 #include "main.h"
-
+#include "pid.h"
 extern CAN_HandleTypeDef hcan1;
 extern CAN_HandleTypeDef hcan2;
 // motor data read
@@ -73,6 +73,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     // get motor id
     i = rx_header.StdId - CAN_3508_M1_ID;
     get_motor_measure(&motor_chassis[i], rx_data);
+		motor_chassis[i].speed_rpm = movingAverageFilter(i, motor_chassis[i].speed_rpm);
 		
     break;
   }

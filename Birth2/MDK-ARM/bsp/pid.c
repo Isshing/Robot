@@ -42,20 +42,6 @@ void PID_init(pid_type_def *pid, uint8_t mode, const fp32 PID[8], fp32 max_out, 
     pid->error[0] = pid->error[1] = pid->error[2] = pid->Pout = pid->Iout = pid->Dout = pid->out = 0.0f;
 }
 
-/**
-  * @brief          pid calculate 
-  * @param[out]     pid: PID struct data point
-  * @param[in]      ref: feedback data 
-  * @param[in]      set: set point
-  * @retval         pid out
-  */
-/**
-  * @brief          pid????
-  * @param[out]     pid: PID?????????
-  * @param[in]      ref: ????????
-  * @param[in]      set: ???
-  * @retval         pid???
-  */
 
 fp32 PID_calc(pid_type_def *pid, fp32 ref, fp32 set)
 {
@@ -104,16 +90,7 @@ fp32 PID_calc(pid_type_def *pid, fp32 ref, fp32 set)
     return pid->out;
 }
 
-/**
-  * @brief          pid out clear
-  * @param[out]     pid: PID struct data point
-  * @retval         none
-  */
-/**
-  * @brief          pid ??????
-  * @param[out]     pid: PID?????????
-  * @retval         none
-  */
+
 void PID_clear(pid_type_def *pid)
 {
     if (pid == NULL)
@@ -128,73 +105,33 @@ void PID_clear(pid_type_def *pid)
 }
 
 
-uint16_t BetaGeneration(float error, float epsilon)
-{
-    uint16_t beta = 0;
-    if (Fabs(error) <= epsilon) {
-        beta = 1;
+
+
+
+MovingAverageFilter_t filters[4];  // 为四个电机定义四个滤波器
+
+// 初始化滤波器
+void initFilters(void) {
+    for (int i = 0; i < 4; i++) {
+        filters[i].index = 0;
+        for (int j = 0; j < SAMPLE_SIZE; j++) {
+            filters[i].samples[j] = 0.0f;
+        }
     }
-    return beta;
 }
 
-//--------------------------------------------------------------
-//  @brief        均值滤波
-//  @param        float inData       输入数据
-//                float a            滤波系数
-//  @return       outData            输出数据
-//  @note         float型
-//--------------------------------------------------------------
-float data_filtering(float *filter, const float filter_data, const uint8_t filter_depth)
-{
-    float filter_sum = 0;
-    uint8_t i;
-    // 更新数据
-    filter[filter_depth] = filter_data;
-
-    for (i = 0; i < filter_depth; i++) {
-        filter[i] = filter[i + 1]; // 数据左移，扔掉末尾数据
-        filter_sum += filter[i];
+// 添加新样本并计算移动平均值
+float movingAverageFilter(int motor_index, float new_sample) {
+    MovingAverageFilter_t *filter = &filters[motor_index];
+    filter->samples[filter->index++] = new_sample;
+    if (filter->index >= SAMPLE_SIZE) {
+        filter->index = 0;
     }
-    return ((float)filter_sum / (float)filter_depth);
-}
 
-//--------------------------------------------------------------
-//  @brief        一阶低通滤波
-//  @param        float inData       输入数据
-//                float a            滤波系数(a* 当前数据 + (1-a)*上次数据)
-//  @return       outData            输出数据
-//  @note         float型
-//--------------------------------------------------------------
-float errorfilter(float inData, float a)
-{
-    float outData;
-    static float prevData1R = 0;
-    outData                 = (1 - a) * prevData1R + a * inData;
-    prevData1R              = inData;
-    return outData;
-}
-
-
-// 高通滤波器,采样频率 100HZ,截止频率 10HZ
-float NUM[3] = {0.7045881062536, 1, 0.8912509381337};
-float DEN[3] = {1, -1.274238074201, 1};
-/*******************************************************************/
-// Name: IIR_Filter
-// Description: 低通滤波器,采样频率 100Hz
-// Calls:
-// Input: xn-当前输入
-// Return: 速度滤波后的值
-/*******************************************************************/
-float IIR_Filter(float xn)
-{
-    float Data_In[3]  = {0, 0, 0};
-    float Data_Out[3] = {0, 0, 0};
-    Data_In[0]        = xn;
-    Data_Out[0]       = -DEN[1] * Data_Out[1] - DEN[2] * Data_Out[2] + NUM[0] * Data_In[0] + NUM[1] * Data_In[1] + NUM[2] * Data_In[2];
-    Data_Out[2]       = Data_Out[1];
-    Data_Out[1]       = Data_Out[0];
-    Data_In[2]        = Data_In[1];
-    Data_In[1]        = Data_In[0];
-    return Data_Out[0];
+    float sum = 0.0f;
+    for (int i = 0; i < SAMPLE_SIZE; i++) {
+        sum += filter->samples[i];
+    }
+    return sum / SAMPLE_SIZE;
 }
 
