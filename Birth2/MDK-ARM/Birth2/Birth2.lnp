@@ -41,7 +41,6 @@
 "birth2\bsp_can.o"
 "birth2\pid.o"
 "birth2\can_receive.o"
-"birth2\chassis_behaviour.o"
 "birth2\chassis_task.o"
 "birth2\user_lib.o"
 "birth2\qmath.o"

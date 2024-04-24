@@ -6,15 +6,15 @@ extern float vy;
 extern float vw;
 float base_distance = 183;
 int test_flag = 0;
-#define TOF_x TOF2
+#define TOF_x TOF3
 #define TOF_y TOF1
 void move_to_desk()
 {
     static bool_t moveToPosition = 0;
-    int distanceThresholdX = 850; 
-    int distanceThresholdY = 1500;
-    int speedTowardsY = 400;
-    int speedTowardsX = 400;
+    int distanceThresholdX = 870; 
+    int distanceThresholdY = 1450;
+    int speedTowardsY = 300;
+    int speedTowardsX = 300;
     if (!moveToPosition)
     {
         vx = speedTowardsX; 
@@ -38,17 +38,19 @@ void move_to_desk()
     }
 }
 
+int turn_ward = 0;
+int waiting_up = 0;
+int waiting_counter = 0;
 void move_to_container()
 {
     static bool_t moveToPosition = 0;
     int distanceThresholdY_H = 1500; 
 		int distanceThresholdY_L = 870; 
     int distanceThresholdX = 250;
-    int speedTowardsY = 400;
-    int speedTowardsX = 400;
-		int turning = 0;
+    int speedTowardsY = 300;
+    int speedTowardsX = 300;
 		
-		if(TOF_x >= distanceThresholdX){
+		if((TOF_x >= distanceThresholdX)&&(moveToPosition==0)){
 			vx = -speedTowardsX;
 			vy = 0;
 		}else{
@@ -57,14 +59,29 @@ void move_to_container()
     if (moveToPosition)
     {
 			vx = 0;
-			if(turning == 0){
+			if(turn_ward == 0){
 				vy = -speedTowardsY;
-				if(TOF_y<= distanceThresholdY_L){turning = 1;}
+				if(TOF_y<= distanceThresholdY_L){
+					turn_ward = 1;
+					waiting_up++;
+				}
 			}else{
 				vy = speedTowardsY;
-				if(TOF_y>= distanceThresholdY_H){turning = 0;}
+				if(TOF_y>= distanceThresholdY_H){
+					turn_ward = 0;
+					waiting_up++;
+				}
 			}
-    }
+			if(waiting_up == 3)moveToPosition = 2;
+    }else if(moveToPosition == 2){
+				vy = 0;
+				vx = 0;
+				vw = 0;
+				waiting_counter ++;
+				if(waiting_counter>10000){
+					moveToPosition = 1;}
+		}
+		
 }
 
 void move_to_search()
@@ -73,7 +90,6 @@ void move_to_search()
     const int distanceThresholdX = 600;
     const int distanceThresholdX_low = 600;
     const int speedTowardsX = 350;
-    // �����һ��Ŀ��㣨��Y����
     if (!moveToPosition)
     {
         vx = speedTowardsX;
@@ -84,7 +100,6 @@ void move_to_search()
     }
     else
     {
-        // ����ڶ���Ŀ��㣨��X����
         vx = -speedTowardsX;
         if (TOF2 <= distanceThresholdX_low)
         {
