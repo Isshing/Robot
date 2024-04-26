@@ -6,6 +6,7 @@ extern float vy;
 extern float vw;
 float base_distance = 183;
 int test_flag = 0;
+int half_move = 0;
 #define TOF_x TOF3
 #define TOF_y TOF1
 void move_to_desk()
@@ -50,36 +51,56 @@ void move_to_container()
     int speedTowardsY = 300;
     int speedTowardsX = 300;
 		
-		if((TOF_x >= distanceThresholdX)&&(moveToPosition==0)){
-			vx = -speedTowardsX;
-			vy = 0;
-		}else{
-			moveToPosition = 1;
+		if(!moveToPosition){
+			if((TOF_x >= distanceThresholdX)&&(moveToPosition==0)){
+				vx = -speedTowardsX;
+				vy = 0;
+			}else{
+				vx = 0;
+				moveToPosition = 1;
+			}
 		}
-    if (moveToPosition)
+    else if (moveToPosition == 1)
     {
-			vx = 0;
 			if(turn_ward == 0){
 				vy = -speedTowardsY;
 				if(TOF_y<= distanceThresholdY_L){
-					turn_ward = 1;
 					waiting_up++;
+					turn_ward = 1;
 				}
 			}else{
 				vy = speedTowardsY;
 				if(TOF_y>= distanceThresholdY_H){
-					turn_ward = 0;
 					waiting_up++;
+					turn_ward = 0;
 				}
 			}
-			if(waiting_up == 3)moveToPosition = 2;
+			if(waiting_up == 3&& half_move==0)moveToPosition = 2;
+			if(waiting_up == 4&& half_move==1)moveToPosition = 3;
     }else if(moveToPosition == 2){
-				vy = 0;
-				vx = 0;
-				vw = 0;
-				waiting_counter ++;
-				if(waiting_counter>10000){
-					moveToPosition = 1;}
+				half_move = 1;
+				if(TOF1<= 375){
+					vx = speedTowardsX;
+					vy = 0;
+				}
+				if(TOF2>2300){
+					vx = 0;
+					moveToPosition = 1;
+					waiting_up = 0;
+				}
+				//waiting_counter ++;
+				//if(waiting_counter>10000){moveToPosition = 1;}
+		}else if(moveToPosition == 3){
+				if(TOF1<= 375){
+					if(TOF2>= 2880){
+						vx = 0;
+						vy = 0;
+						vw = 0;
+					}else{
+						vx = speedTowardsX;
+						vy = 0;
+					}
+				}
 		}
 		
 }

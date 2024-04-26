@@ -73,7 +73,8 @@ extern char jetson_data[2];
 extern void Jetson_read(unsigned char *data);
 int st = 0;
 int ready = 0;
-float erro_tof_y = 0;
+float error_tof_y,error_tof_x = 0;
+extern int waiting_up;
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId PID_ControlHandle;
@@ -183,9 +184,8 @@ void StartDefaultTask(void const * argument)
 		//ANO_sent_data(motor_data_0->speed_rpm, set_speed_0,(int16)motor_pid_0.Pout,(int16)gein, (int16)bss,(int16)motor_pid_0.Iout, (int16)motor_pid_0.Ki,(int16)motor_pid_0.Kp ,(int16)motor_pid_0.Pout ,(int16)motor_pid_0.Dout);
 		//ANO_sent_data(motor_data_0->speed_rpm, set_speed_0,(int16)kpdata,(int16)kidata, (int16)kddata,(int16)outdata, 0,0 ,0,0);
 		//ANO_sent_data(motor_data_0->speed_rpm,(int16)set_speed_0, (int16)motor_pid_0.out,(int16)motor_pid_0.Pout, (int16)motor_pid_0.Iout,(int16)motor_pid_0.Dout, (int16)motor_pid_0.error[0],0 ,0,0);
-		ANO_sent_data((int16)erro_tof_y,(int16)heading_deg, (int16)rof_pid.out,(int16)rof_pid.Pout, (int16)rof_pid.Iout,(int16)rof_pid.Dout,(int16)TOF1 ,(int16)TOF4,0,0);
-			
-		//float TOF1 4
+		//ANO_sent_data((int16)error_tof_y,(int16)heading_deg, (int16)rof_pid.out,(int16)rof_pid.Pout, (int16)rof_pid.Iout,(int16)rof_pid.Dout,(int16)TOF1 ,(int16)TOF4,0,0);
+		//ANO_sent_data((int16)TOF1,(int16)waiting_up, 0,0, 0,0,0 ,0,0,0);
 			if(jetson_data[0] == 'O' && jetson_data[1] == 'K'){
 				jeston_flag = 1;
 				ready = 1;
@@ -227,15 +227,23 @@ void PID_Control_Function(void const * argument)
   for (;;)
   {
 		if(initial_flag == 1){
-			erro_tof_y = TOF1-TOF4;
-			vw = -PID_calc(&rof_pid, erro_tof_y, 0); 
-			
+			if(Fabs(TOF1-TOF4)<32){
+				error_tof_y = TOF1-TOF4;
+			}
+			if(Fabs(TOF1-TOF4)<32){
+				error_tof_x = TOF2-TOF3;
+			}
+			if(TOF1<= 1050){
+				vw = -PID_calc(&rof_pid, error_tof_y, 0); 
+			}else{
+				vw = -PID_calc(&rof_pid, error_tof_x, 0); 
+			}
+
 			if(test_flag == 0){
 				move_to_desk();
 			}else if(test_flag == 1){
 				move_to_container();
 			}
-
 			move_solution(vx,vy,vw);
 			PID_calc(&motor_pid_0, motor_data_0->speed_rpm, set_speed_0); 
 			PID_calc(&motor_pid_1, motor_data_1->speed_rpm, set_speed_1); 
