@@ -3,7 +3,7 @@
 <title>Static Call Graph - [Birth2\Birth2.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image Birth2\Birth2.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Fri Apr 26 21:38:20 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Sat Apr 27 19:28:46 2024
 <BR><P>
 <H3>Maximum Stack Usage =        384 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -664,8 +664,8 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f427xx.o(RESET)
 </UL>
-<P><STRONG><a name="[85]"></a>CAN_cmd_chassis</STRONG> (Thumb, 60 bytes, Stack size 16 bytes, can_receive.o(i.CAN_cmd_chassis))
-<BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = CAN_cmd_chassis &rArr; HAL_CAN_AddTxMessage
+<P><STRONG><a name="[85]"></a>CAN_cmd_up</STRONG> (Thumb, 68 bytes, Stack size 24 bytes, can_receive.o(i.CAN_cmd_up))
+<BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = CAN_cmd_up &rArr; HAL_CAN_AddTxMessage
 </UL>
 <BR>[Calls]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_CAN_AddTxMessage
 </UL>
@@ -744,7 +744,7 @@ Global Symbols
 <P><STRONG><a name="[86]"></a>HAL_CAN_AddTxMessage</STRONG> (Thumb, 208 bytes, Stack size 20 bytes, stm32f4xx_hal_can.o(i.HAL_CAN_AddTxMessage))
 <BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = HAL_CAN_AddTxMessage
 </UL>
-<BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CAN_cmd_chassis
+<BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CAN_cmd_up
 </UL>
 
 <P><STRONG><a name="[fe]"></a>HAL_CAN_ConfigFilter</STRONG> (Thumb, 262 bytes, Stack size 8 bytes, stm32f4xx_hal_can.o(i.HAL_CAN_ConfigFilter))
@@ -1299,15 +1299,15 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f427xx.o(RESET)
 </UL>
-<P><STRONG><a name="[6d]"></a>PID_Control_Function</STRONG> (Thumb, 390 bytes, Stack size 8 bytes, freertos.o(i.PID_Control_Function))
-<BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = PID_Control_Function &rArr; osDelay &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
+<P><STRONG><a name="[6d]"></a>PID_Control_Function</STRONG> (Thumb, 368 bytes, Stack size 24 bytes, freertos.o(i.PID_Control_Function))
+<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = PID_Control_Function &rArr; osDelay &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
 <LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_to_desk
 <LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_to_container
 <LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
 <LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Fabs
-<LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CAN_cmd_chassis
+<LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CAN_cmd_up
 <LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_solution
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> freertos.o(.constdata)

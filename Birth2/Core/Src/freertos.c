@@ -224,6 +224,7 @@ void PID_Control_Function(void const * argument)
 {
   /* USER CODE BEGIN PID_Control_Function */
   /* Infinite loop */
+	int up_time = 0;
   for (;;)
   {
 		if(initial_flag == 1){
@@ -249,7 +250,14 @@ void PID_Control_Function(void const * argument)
 			PID_calc(&motor_pid_1, motor_data_1->speed_rpm, set_speed_1); 
 			PID_calc(&motor_pid_2, motor_data_2->speed_rpm, set_speed_2); 
 			PID_calc(&motor_pid_3, motor_data_3->speed_rpm, set_speed_3); 
-			CAN_cmd_chassis(motor_pid_0.out,motor_pid_1.out, motor_pid_2.out, motor_pid_3.out); 
+			up_time++;
+			//CAN_cmd_chassis(motor_pid_0.out,motor_pid_1.out, motor_pid_2.out, motor_pid_3.out); 
+			if(up_time<2000){
+				CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x01, 0x00);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
+			}else{
+				CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00);//p2 0x01 DOWN Ox00 UP
+			}
+
 		}
     osDelay(2);
   }

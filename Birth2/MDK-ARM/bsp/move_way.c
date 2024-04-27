@@ -38,7 +38,6 @@ void move_to_desk()
         }
     }
 }
-
 int turn_ward = 0;
 int waiting_up = 0;
 int waiting_counter = 0;
@@ -90,7 +89,7 @@ void move_to_container()
 				}
 				//waiting_counter ++;
 				//if(waiting_counter>10000){moveToPosition = 1;}
-		}else if(moveToPosition == 3){
+		}else if(moveToPosition == 3){//ending
 				if(TOF1<= 375){
 					if(TOF2>= 2880){
 						vx = 0;
@@ -132,7 +131,7 @@ void move_to_search()
 void test_move()
 {
     if (test_flag == 0)
-    { //
+    {
         move_to_desk();
     }
     else if (test_flag == 1)
