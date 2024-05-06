@@ -498,7 +498,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		}
 		else if(huart == &huart6)
 		{
-
+			Jetson_read(uart6Rx);
 			HAL_UART_Receive_DMA(&huart6, uart6Rx, 32);
 		}
     else if(huart == &huart2) {

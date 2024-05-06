@@ -12,6 +12,14 @@ int rs_imutype =0;
 int rs_ahrstype =0;
 IMUData_Packet_t IMUData_Packet;
 AHRSData_Packet_t AHRSData_Packet;
+float angle_change(float angle){
+		if (angle > 180) {
+			 angle -= 360;
+		} else if (angle < -180) {
+			 angle += 360;
+		}
+		return angle;
+}
 /*************
 实现16进制的can数据转换成浮点型数据
 ****************/
@@ -45,23 +53,7 @@ long long timestamp(u8 Data_1,u8 Data_2,u8 Data_3,u8 Data_4)
 	transition_32 |=  Data_1;
 	return transition_32;
 }
-//void data_task(void *pvParameters)
-//{
-//	 u32 lastWakeTime = getSysTickCnt();
-//	
-//   while(1)
-//    {	
-//			//The task is run at 20hz
-//			//此任务以20Hz的频率运行
-//			vTaskDelayUntil(&lastWakeTime, F2T(RATE_20_HZ));
-//			//Assign the data to be sent
-//			//对要进行发送的数据进行赋值
 
-
-//      TTL_Hex2Dec();	             //		使用CAN通信时屏蔽，使用串口通信以及RS485通信时打开
-//		  //Can_Hex2Dec();	             //		使用串口通信以及RS485通信时屏蔽，使用CAN通信时打开 
-//		}
-//}
 /*******************************
 16进制转浮点型数据
 *******************************/
@@ -88,23 +80,11 @@ u8 TTL_Hex2Dec(void)
 		AHRSData_Packet.Heading=DATA_Trans(Fd_rsahrs[27],Fd_rsahrs[28],Fd_rsahrs[29],Fd_rsahrs[30]);	 //偏航角
 			
     roll_deg = AHRSData_Packet.Roll * (180.0 / M_PI);
-		if (roll_deg > 180) {
-        roll_deg -= 360;
-    } else if (roll_deg < -180) {
-        roll_deg += 360;
-    }
+		roll_deg = angle_change(roll_deg);
     pitch_deg = AHRSData_Packet.Pitch * (180.0 / M_PI);
-		if (pitch_deg > 180) {
-       pitch_deg -= 360;
-    } else if (pitch_deg < -180) {
-        pitch_deg += 360;
-    }
+		pitch_deg = angle_change(pitch_deg);
     heading_deg = AHRSData_Packet.Heading * (180.0 / M_PI);
-		if (heading_deg > 180) {
-       heading_deg -= 360;
-    } else if (heading_deg < -180) {
-       heading_deg += 360;
-    }
+		heading_deg = angle_change(heading_deg);
 		if(initial_flag==0){
 			initial_angle = heading_deg;
 			initial_flag = 1;

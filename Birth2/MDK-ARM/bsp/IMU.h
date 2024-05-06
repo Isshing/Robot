@@ -104,7 +104,7 @@ typedef struct AHRSData_Packet_t
 
 void data_task(void *pvParameters);
 void data_transition(void);
-
+float angle_change(float angle);
 void AHRSData2PC(void);
 void IMUData2PC(void);
 float XYZ_Target_Speed_transition(u8 High,u8 Low);

@@ -100,7 +100,7 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */ 
+  /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
 
@@ -127,7 +127,7 @@ int main(void)
 	PID_init(&motor_pid_2,PID_POSITION,PID_data_2,3000,3000); 
 	PID_init(&motor_pid_3,PID_POSITION,PID_data_3,3000,3000); 
   PID_init(&angle_pid,PID_POSITION,PID_data_4,2200,1800); 
-	PID_init(&rof_pid,PID_POSITION,PID_tof_data,1000,1000);
+	PID_init(&rof_pid,PID_POSITION,PID_tof_data,500,500);
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */

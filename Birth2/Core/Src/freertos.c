@@ -51,13 +51,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-extern unsigned char uart8Rx[32];
-extern unsigned char uart6Tx[32];
-extern unsigned char uart7Rx[32];
-extern UART_HandleTypeDef huart8;
-extern UART_HandleTypeDef huart7;
-extern UART_HandleTypeDef huart6;
-extern UART_HandleTypeDef huart2;
+extern unsigned char uart8Rx[32],uart6Tx[32],uart7Rx[32];
+extern UART_HandleTypeDef huart8,huart7,huart6,huart2;
 extern unsigned int jeston_flag;
 extern uint8_t RxByte;
 extern void ANO_sent_data(int16 A, int16 B, int16 C, int16 D, int16 E, int16 F, int16 G, int16 H, int16 I, int16 J);
@@ -74,10 +69,15 @@ extern void Jetson_read(unsigned char *data);
 int st = 0;
 int ready = 0;
 float error_tof_y,error_tof_x = 0;
-extern int waiting_up;
+extern int waiting_up,half_move;
+int rolling_flag =0;
+float turning_angle = 0;
+int go_to_roll = 0;
+float comp_angle = 0;
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId PID_ControlHandle;
+osThreadId Move_controlHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -100,6 +100,7 @@ void move_solution(float vx, float vy, float vw){
 
 void StartDefaultTask(void const * argument);
 void PID_Control_Function(void const * argument);
+void Move_control_task(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -154,6 +155,10 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(PID_Control, PID_Control_Function, osPriorityIdle, 0, 256);
   PID_ControlHandle = osThreadCreate(osThread(PID_Control), NULL);
 
+  /* definition and creation of Move_control */
+  osThreadDef(Move_control, Move_control_task, osPriorityIdle, 0, 256);
+  Move_controlHandle = osThreadCreate(osThread(Move_control), NULL);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -185,7 +190,7 @@ void StartDefaultTask(void const * argument)
 		//ANO_sent_data(motor_data_0->speed_rpm, set_speed_0,(int16)kpdata,(int16)kidata, (int16)kddata,(int16)outdata, 0,0 ,0,0);
 		//ANO_sent_data(motor_data_0->speed_rpm,(int16)set_speed_0, (int16)motor_pid_0.out,(int16)motor_pid_0.Pout, (int16)motor_pid_0.Iout,(int16)motor_pid_0.Dout, (int16)motor_pid_0.error[0],0 ,0,0);
 		//ANO_sent_data((int16)error_tof_y,(int16)heading_deg, (int16)rof_pid.out,(int16)rof_pid.Pout, (int16)rof_pid.Iout,(int16)rof_pid.Dout,(int16)TOF1 ,(int16)TOF4,0,0);
-		//ANO_sent_data((int16)TOF1,(int16)waiting_up, 0,0, 0,0,0 ,0,0,0);
+		//ANO_sent_data((int16)TOF1,(int16)vw, (int16)turning_angle,(int16)comp_angle, (int16)rolling_flag,(int16)vx,(int16)error_tof_x ,0,0,0);
 			if(jetson_data[0] == 'O' && jetson_data[1] == 'K'){
 				jeston_flag = 1;
 				ready = 1;
@@ -197,6 +202,9 @@ void StartDefaultTask(void const * argument)
 				st = 1;
 			}else if(jetson_data[0] == 'R' && jetson_data[1] == 'G'){
 				jeston_flag = 3;
+				st = 1;
+			}else if(jetson_data[0] == 'Z' && jetson_data[1] == 'X'){
+				test_flag = 1;
 				st = 1;
 			}
 			if(st == 1){
@@ -218,8 +226,6 @@ void StartDefaultTask(void const * argument)
  * @retval None
  */
 /* USER CODE END Header_PID_Control_Function */
-int turning = 0;
-
 void PID_Control_Function(void const * argument)
 {
   /* USER CODE BEGIN PID_Control_Function */
@@ -228,40 +234,69 @@ void PID_Control_Function(void const * argument)
   for (;;)
   {
 		if(initial_flag == 1){
-			if(Fabs(TOF1-TOF4)<32){
-				error_tof_y = TOF1-TOF4;
-			}
-			if(Fabs(TOF1-TOF4)<32){
-				error_tof_x = TOF2-TOF3;
-			}
-			if(TOF1<= 1050){
-				vw = -PID_calc(&rof_pid, error_tof_y, 0); 
-			}else{
-				vw = -PID_calc(&rof_pid, error_tof_x, 0); 
-			}
 
-			if(test_flag == 0){
-				move_to_desk();
-			}else if(test_flag == 1){
-				move_to_container();
-			}
-			move_solution(vx,vy,vw);
 			PID_calc(&motor_pid_0, motor_data_0->speed_rpm, set_speed_0); 
 			PID_calc(&motor_pid_1, motor_data_1->speed_rpm, set_speed_1); 
 			PID_calc(&motor_pid_2, motor_data_2->speed_rpm, set_speed_2); 
 			PID_calc(&motor_pid_3, motor_data_3->speed_rpm, set_speed_3); 
 			up_time++;
-			//CAN_cmd_chassis(motor_pid_0.out,motor_pid_1.out, motor_pid_2.out, motor_pid_3.out); 
-			if(up_time<2000){
-				CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x01, 0x00);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
-			}else{
-				CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00);//p2 0x01 DOWN Ox00 UP
-			}
+			CAN_cmd_chassis(motor_pid_0.out,motor_pid_1.out, motor_pid_2.out, motor_pid_3.out); 
+
+//			if(up_time<2000){
+//				CAN_cmd_up(0x01, 0x01, 0x20, 0x00, 0x00, 0x01, 0x00);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
+//			}else{
+//				CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00);//p2 0x01 DOWN Ox00 UP
+//			}
 
 		}
     osDelay(2);
   }
   /* USER CODE END PID_Control_Function */
+}
+
+/* USER CODE BEGIN Header_Move_control_task */
+/**
+* @brief Function implementing the Move_control thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Move_control_task */
+void Move_control_task(void const * argument)
+{
+  /* USER CODE BEGIN Move_control_task */
+  /* Infinite loop */
+  for(;;)
+  {
+			if(rolling_flag == 0){
+				if(Fabs(TOF1-TOF4)<256){
+					error_tof_y = TOF1-TOF4;
+				}
+				if(Fabs(TOF2-TOF3)<256){
+					error_tof_x = TOF2-TOF3;
+				}
+				if(TOF1<= 1050&&go_to_roll == 0){
+					vw = -PID_calc(&rof_pid, error_tof_y, 0);//* (1 - 2*half_move); 
+				}else{
+					vw = -PID_calc(&rof_pid, error_tof_x, 0);//* (1 - 2*half_move); 
+				}
+			}else{
+				turning_angle = initial_angle + 170;
+				comp_angle = (heading_deg<-90)?360 + heading_deg: heading_deg;
+				if(comp_angle<turning_angle){
+					vw = 600;
+				}else{
+					rolling_flag = 0;
+				}
+			}
+			if(test_flag == 0){
+				move_to_desk();
+			}else if(test_flag == 1){
+				move_to_container();
+			}
+		move_solution (vx,vy,vw);
+    osDelay(5);
+  }
+  /* USER CODE END Move_control_task */
 }
 
 /* Private application code --------------------------------------------------*/

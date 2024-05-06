@@ -1,12 +1,21 @@
+#include "can.h"
+#include <string.h>
+#include <stdio.h>
+#include "CAN_receive.h"
+#include "pid.h"
 #include "IMU.h"
 #include "move_way.h"
-#include "CAN_receive.h"
+extern UART_HandleTypeDef huart8,huart7,huart6,huart2;
 extern float vx;
 extern float vy;
 extern float vw;
+extern int rolling_flag;
+extern unsigned int jeston_flag;
+extern int go_to_roll;
 float base_distance = 183;
 int test_flag = 0;
 int half_move = 0;
+int walling_start = 0;
 #define TOF_x TOF3
 #define TOF_y TOF1
 void move_to_desk()
@@ -29,12 +38,12 @@ void move_to_desk()
     { 
 			  vx = 0;
         vy = speedTowardsY; 
-
         if (TOF_y >= distanceThresholdY)
         {
             vx = 0;
             vy = 0;
-            test_flag = 1; 
+						vw = 0;
+						HAL_UART_Transmit(&huart6, (uint8_t *)"ACRB", strlen("ACRB"), 999);
         }
     }
 }
@@ -56,53 +65,78 @@ void move_to_container()
 				vy = 0;
 			}else{
 				vx = 0;
+				HAL_UART_Transmit(&huart6, (uint8_t *)"ANB", strlen("ANB"), 999);
 				moveToPosition = 1;
 			}
 		}
     else if (moveToPosition == 1)
     {
 			if(turn_ward == 0){
-				vy = -speedTowardsY;
+				vy = -speedTowardsY * (1 - 2*half_move);
 				if(TOF_y<= distanceThresholdY_L){
 					waiting_up++;
 					turn_ward = 1;
 				}
 			}else{
-				vy = speedTowardsY;
+				vy = speedTowardsY * (1 - 2*half_move);
 				if(TOF_y>= distanceThresholdY_H){
 					waiting_up++;
 					turn_ward = 0;
 				}
 			}
-			if(waiting_up == 3&& half_move==0)moveToPosition = 2;
-			if(waiting_up == 4&& half_move==1)moveToPosition = 3;
+			if(jeston_flag == 2){//jeston command to "Stop"
+				vx = 0;
+			  vy = 0;
+			}
+			if(waiting_up == 2&& half_move==0)moveToPosition = 2;
+			if(waiting_up == 3&& half_move==1)moveToPosition = 4;
     }else if(moveToPosition == 2){
-				half_move = 1;
-				if(TOF1<= 375){
-					vx = speedTowardsX;
-					vy = 0;
-				}
-				if(TOF2>2300){
+				if(TOF1<= 1980){
+					go_to_roll = 1;
+				}else{
 					vx = 0;
-					moveToPosition = 1;
-					waiting_up = 0;
+					vy = 0;
+					initial_flag = 0;
+					moveToPosition = 5;
+					rolling_flag = 1;
+					half_move = 1;
 				}
-				//waiting_counter ++;
-				//if(waiting_counter>10000){moveToPosition = 1;}
-		}else if(moveToPosition == 3){//ending
-				if(TOF1<= 375){
-					if(TOF2>= 2880){
-						vx = 0;
-						vy = 0;
-						vw = 0;
+//			}else if(moveToPosition == 3){
+//				if(rolling_flag == 0){
+//					go_to_roll = 0;
+//					vx = -speedTowardsX;
+//					vy = 0;
+//					if(TOF2<870){
+//						moveToPosition = 1;
+//					}
+//				}
+//			}else if(moveToPosition == 4){//ending
+//				if(TOF_x>= 2200){
+//					if(TOF_y<= 500){
+//						vx = 0;
+//						vy = 0;
+//						vw = 0;
+//					}else{
+//						vx = -speedTowardsX;
+//						vy = 0;
+//					}
+			}else if(moveToPosition == 5){//ending
+				if(rolling_flag == 0){	
+					go_to_roll = 0;
+					if(walling_start == 1){
+						vx = -speedTowardsX;
 					}else{
-						vx = speedTowardsX;
-						vy = 0;
+						if(TOF_y>300){
+							vy = -speedTowardsY;
+						}else{
+							vy = 0;
+							walling_start = 1;
+						}
 					}
 				}
-		}
-		
+		}	
 }
+
 
 void move_to_search()
 {
