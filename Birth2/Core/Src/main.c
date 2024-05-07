@@ -66,7 +66,7 @@ const motor_measure_t *motor_data_0,*motor_data_1,*motor_data_2,*motor_data_3;
 pid_type_def motor_pid_0,motor_pid_1,motor_pid_2,motor_pid_3;					//????PID???????
 pid_type_def angle_pid,rof_pid;		
 float set_speed_0,set_speed_1,set_speed_2,set_speed_3 =0;
-extern uint8_t RxByte;
+extern uint8_t RxByte,Jetson_RxByte;
 const fp32 PID_data_0[8]={2.5f, 0.08f, 1.4f, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
 const fp32 PID_data_1[8]={2.5f, 0.08f, 1.4f, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
 const fp32 PID_data_2[8]={2.5f, 0.08f, 1.4f, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
@@ -118,6 +118,7 @@ int main(void)
 	can_filter_init();
 	initFilters();
 	HAL_UART_Receive_IT(&huart2, &RxByte, 1);
+//	HAL_UART_Receive_IT(&huart7, &Jetson_RxByte, 1);
 	motor_data_0 = get_chassis_motor_measure_point(0); 
 	motor_data_1 = get_chassis_motor_measure_point(1); 
 	motor_data_2 = get_chassis_motor_measure_point(2); 

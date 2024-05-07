@@ -67,13 +67,16 @@ extern int test_flag;
 extern char jetson_data[2];
 extern void Jetson_read(unsigned char *data);
 int st = 0;
-int ready = 0;
 float error_tof_y,error_tof_x = 0;
 extern int waiting_up,half_move;
 int rolling_flag =0;
 float turning_angle = 0;
 int go_to_roll = 0;
 float comp_angle = 0;
+int stt = 0;
+extern int CR_flag,N_flag;
+int crmm = 3;
+char last_jetson_data[2];
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId PID_ControlHandle;
@@ -186,35 +189,51 @@ void StartDefaultTask(void const * argument)
     //		HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)"TOFuart8:", (uint16_t)strlen("TOFuart8:"), (uint32_t)999);
     //		HAL_UART_Transmit(&huart6, (uint8_t *)buffer8, strlen(buffer8), 999);
     //ANO_sent_data(motor_data_0->speed_rpm, motor_data_1->speed_rpm, motor_data_2->speed_rpm, motor_data_3->speed_rpm, (int16)vw,(int16)heading_deg, set_speed_0, set_speed_1,set_speed_2 , set_speed_3);
-		//ANO_sent_data(motor_data_0->speed_rpm, set_speed_0,(int16)motor_pid_0.Pout,(int16)gein, (int16)bss,(int16)motor_pid_0.Iout, (int16)motor_pid_0.Ki,(int16)motor_pid_0.Kp ,(int16)motor_pid_0.Pout ,(int16)motor_pid_0.Dout);
+		//ANO_sent_data(mot1`		or_data_0->speed_rpm, set_speed_0,(int16)motor_pid_0.Pout,(int16)gein, (int16)bss,(int16)motor_pid_0.Iout, (int16)motor_pid_0.Ki,(int16)motor_pid_0.Kp ,(int16)motor_pid_0.Pout ,(int16)motor_pid_0.Dout);
 		//ANO_sent_data(motor_data_0->speed_rpm, set_speed_0,(int16)kpdata,(int16)kidata, (int16)kddata,(int16)outdata, 0,0 ,0,0);
 		//ANO_sent_data(motor_data_0->speed_rpm,(int16)set_speed_0, (int16)motor_pid_0.out,(int16)motor_pid_0.Pout, (int16)motor_pid_0.Iout,(int16)motor_pid_0.Dout, (int16)motor_pid_0.error[0],0 ,0,0);
 		//ANO_sent_data((int16)error_tof_y,(int16)heading_deg, (int16)rof_pid.out,(int16)rof_pid.Pout, (int16)rof_pid.Iout,(int16)rof_pid.Dout,(int16)TOF1 ,(int16)TOF4,0,0);
 		//ANO_sent_data((int16)TOF1,(int16)vw, (int16)turning_angle,(int16)comp_angle, (int16)rolling_flag,(int16)vx,(int16)error_tof_x ,0,0,0);
-			if(jetson_data[0] == 'O' && jetson_data[1] == 'K'){
+			jetson_data[0] = uart7Rx[1];
+			jetson_data[1] = uart7Rx[2];
+			if(jetson_data[0] == 'J' && jetson_data[1] == 'K'){
 				jeston_flag = 1;
-				ready = 1;
-				memset(uart6Rx,0,sizeof(uart6Rx));
-				memset(jetson_data,0,sizeof(jetson_data));
-			}
-			else if(jetson_data[0] == 'S' && jetson_data[1] == 'T'){
+			}else if(jetson_data[0] == 'S' && jetson_data[1] == 'T'){
 				jeston_flag = 2;
-				st = 1;
 			}else if(jetson_data[0] == 'R' && jetson_data[1] == 'G'){
 				jeston_flag = 3;
-				st = 1;
-			}else if(jetson_data[0] == 'Z' && jetson_data[1] == 'X'){
+			}else if(jetson_data[0] == 'C' && jetson_data[1] == 'D'){
+				jeston_flag = 4;
 				test_flag = 1;
-				st = 1;
+			}else if(jetson_data[0] == 'H' && jetson_data[1] == 'J'){
+				jeston_flag = 5;
 			}
-			if(st == 1){
-				st = 0;
-				memset(uart6Rx,0,sizeof(uart6Rx));
-				memset(jetson_data,0,sizeof(jetson_data));
-				HAL_UART_Transmit(&huart6, (uint8_t *)"AOKB", strlen("AOKB"), 999);
+			if(CR_flag == 1){
+				if(crmm>0){
+					HAL_UART_Transmit(&huart7, (uint8_t *)"AFMB", strlen("AFMB"), 999);
+					crmm--;
+				}else{
+					CR_flag = 0;
+					crmm = 3;
+				}
 			}
-		TTL_Hex2Dec();
-    osDelay(10);
+			if(N_flag == 1){
+				if(crmm>0){
+					HAL_UART_Transmit(&huart6, (uint8_t *)"ANB", strlen("ANB"), 999);
+					crmm--;
+				}else{
+					N_flag = 0;
+					crmm = 3;
+				}
+			}	
+			if(last_jetson_data[0]!=jetson_data[0]&& last_jetson_data[1]!=jetson_data[1]){
+				last_jetson_data[0] = jetson_data[0];
+				last_jetson_data[1] = jetson_data[1];
+				if(jeston_flag != 1){
+					HAL_UART_Transmit(&huart7, (uint8_t *)"AJKB", strlen("AJKB"), 999);
+				}
+			}
+    osDelay(2);
   }
   /* USER CODE END StartDefaultTask */
 }
@@ -234,14 +253,23 @@ void PID_Control_Function(void const * argument)
   for (;;)
   {
 		if(initial_flag == 1){
-
+			if(stt == 0){
+				HAL_UART_Transmit(&huart7, (uint8_t *)"AGNB", strlen("AGNB"), 999);
+				stt = 1;
+			}
+			if(jeston_flag == 2){//jeston command to "Stop"
+				vx = 0;
+			  vy = 0;
+			}
+			move_solution (vx,vy,vw);
 			PID_calc(&motor_pid_0, motor_data_0->speed_rpm, set_speed_0); 
 			PID_calc(&motor_pid_1, motor_data_1->speed_rpm, set_speed_1); 
 			PID_calc(&motor_pid_2, motor_data_2->speed_rpm, set_speed_2); 
 			PID_calc(&motor_pid_3, motor_data_3->speed_rpm, set_speed_3); 
-			up_time++;
+			//up_time++;
 			CAN_cmd_chassis(motor_pid_0.out,motor_pid_1.out, motor_pid_2.out, motor_pid_3.out); 
 
+			
 //			if(up_time<2000){
 //				CAN_cmd_up(0x01, 0x01, 0x20, 0x00, 0x00, 0x01, 0x00);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
 //			}else{
@@ -293,8 +321,8 @@ void Move_control_task(void const * argument)
 			}else if(test_flag == 1){
 				move_to_container();
 			}
-		move_solution (vx,vy,vw);
-    osDelay(5);
+			TTL_Hex2Dec();
+    osDelay(2);
   }
   /* USER CODE END Move_control_task */
 }

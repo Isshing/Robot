@@ -16,12 +16,16 @@ float base_distance = 183;
 int test_flag = 0;
 int half_move = 0;
 int walling_start = 0;
+extern unsigned int jeston_flag ;
 #define TOF_x TOF3
 #define TOF_y TOF1
+int met = 0;
+int CR_flag = 0;
+int N_flag = 0;
 void move_to_desk()
 {
     static bool_t moveToPosition = 0;
-    int distanceThresholdX = 870; 
+    int distanceThresholdX = 985; 
     int distanceThresholdY = 1450;
     int speedTowardsY = 300;
     int speedTowardsX = 300;
@@ -33,6 +37,7 @@ void move_to_desk()
         {
             moveToPosition = 1; 
         }
+				
     }
     else
     { 
@@ -40,10 +45,13 @@ void move_to_desk()
         vy = speedTowardsY; 
         if (TOF_y >= distanceThresholdY)
         {
-            vx = 0;
-            vy = 0;
-						vw = 0;
-						HAL_UART_Transmit(&huart6, (uint8_t *)"ACRB", strlen("ACRB"), 999);
+					vx = 0;
+					vy = 0;
+					vw = 0;
+					if(met == 0){
+						CR_flag = 1;
+						met = 1;
+					}
         }
     }
 }
@@ -65,12 +73,19 @@ void move_to_container()
 				vy = 0;
 			}else{
 				vx = 0;
-				HAL_UART_Transmit(&huart6, (uint8_t *)"ANB", strlen("ANB"), 999);
-				moveToPosition = 1;
+				if(met == 0){
+						N_flag = 1;
+						met = 1;
+				}
+				if(jeston_flag == 5)moveToPosition = 1;
 			}
 		}
     else if (moveToPosition == 1)
-    {
+    {			
+			if(jeston_flag == 2){//jeston command to "Stop"
+				vx = 0;
+			  vy = 0;
+			}else{
 			if(turn_ward == 0){
 				vy = -speedTowardsY * (1 - 2*half_move);
 				if(TOF_y<= distanceThresholdY_L){
@@ -80,16 +95,13 @@ void move_to_container()
 			}else{
 				vy = speedTowardsY * (1 - 2*half_move);
 				if(TOF_y>= distanceThresholdY_H){
-					waiting_up++;
-					turn_ward = 0;
+						waiting_up++;
+						turn_ward = 0;
+					}
 				}
+				if(waiting_up == 2&& half_move==0)moveToPosition = 2;
+				if(waiting_up == 3&& half_move==1)moveToPosition = 4;
 			}
-			if(jeston_flag == 2){//jeston command to "Stop"
-				vx = 0;
-			  vy = 0;
-			}
-			if(waiting_up == 2&& half_move==0)moveToPosition = 2;
-			if(waiting_up == 3&& half_move==1)moveToPosition = 4;
     }else if(moveToPosition == 2){
 				if(TOF1<= 1980){
 					go_to_roll = 1;
@@ -134,7 +146,7 @@ void move_to_container()
 						}
 					}
 				}
-		}	
+		}
 }
 
 
