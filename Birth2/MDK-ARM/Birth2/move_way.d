@@ -1,4 +1,5 @@
 birth2\move_way.o: bsp\move_way.c
+birth2\move_way.o: bsp\move_way.h
 birth2\move_way.o: ../Core/Inc/can.h
 birth2\move_way.o: ../Core/Inc/main.h
 birth2\move_way.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
@@ -41,4 +42,3 @@ birth2\move_way.o: bsp\pid.h
 birth2\move_way.o: bsp\Qmath.h
 birth2\move_way.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\math.h
 birth2\move_way.o: bsp\IMU.h
-birth2\move_way.o: bsp\move_way.h

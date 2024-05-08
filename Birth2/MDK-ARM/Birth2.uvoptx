@@ -345,7 +345,7 @@
         <Ww>
           <count>24</count>
           <WinNumber>2</WinNumber>
-          <ItemText>st</ItemText>
+          <ItemText>st,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>25</count>
@@ -361,6 +361,31 @@
           <count>27</count>
           <WinNumber>2</WinNumber>
           <ItemText>met</ItemText>
+        </Ww>
+        <Ww>
+          <count>28</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>distance,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>29</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>Pack_Data</ItemText>
+        </Ww>
+        <Ww>
+          <count>30</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>Uart3_Receive_buf</ItemText>
+        </Ww>
+        <Ww>
+          <count>31</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>state</ItemText>
+        </Ww>
+        <Ww>
+          <count>32</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>state</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>
