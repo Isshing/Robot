@@ -18,11 +18,9 @@ extern uint16_t distance;
 int met = 0;
 int CR_flag = 0;
 int N_flag = 0;
-#define sg_down 1
-#define sg_up 0
-#define level1 40
-#define level2 240
-#define level3 900
+int level[4];
+uint8 up_done_flag = 0;
+uint8 last_up_done_flag = 0;
 void move_to_desk()
 {
     static bool_t moveToPosition = 0;
@@ -30,21 +28,27 @@ void move_to_desk()
     int distanceThresholdY = 1450;
     int speedTowardsY = 300;
     int speedTowardsX = 300;
-		up_move(level2,0);
     if (!moveToPosition)
     {
-        vx = speedTowardsX; 
-        vy = 0;
-			   if (TOF_x >= distanceThresholdX)
-        {
-            moveToPosition = 1; 
-        }
-				
+			if(TOF_x<distanceThresholdX - 200){
+				vx = speedTowardsX + 300; 
+			}else{
+				vx = speedTowardsX;
+			}
+			vy = 0;
+			if (TOF_x >= distanceThresholdX)
+			{
+					moveToPosition = 1; 
+			}
     }
     else
     { 
 			  vx = 0;
-        vy = speedTowardsY; 
+				if(TOF_y<distanceThresholdY - 300 && TOF_y> 500){
+					vy = speedTowardsY + 300; 
+				}else{
+					vy = speedTowardsY;
+				}
         if (TOF_y >= distanceThresholdY)
         {
 					vx = 0;
@@ -54,15 +58,34 @@ void move_to_desk()
 						CR_flag = 1;
 						met = 1;
 					}
+					up_done_flag = 0;
         }
     }
 }
+//void move_to_desk_2()
+//{
+//	if(TOF_y<600){
+//		if(TOF_x<800){
+//			vx = 600;
+//		}else{
+//			vx = 300;
+//		}
+//		if(TOF_y)
+//	}else if(TOF_y >= 1700){
+//		
+//	}else{
+//	
+//	}
+//}
 int turn_ward = 0;
 int waiting_up = 0;
 int waiting_counter = 0;
-
 void move_to_container()
 {
+	  level[0] = 0;
+		level[1] = level1;
+		level[2] = level2;
+		level[3] = level3;
     static bool_t moveToPosition = 0;
     int distanceThresholdY_H = 1700; 
 		int distanceThresholdY_L = 870; 
@@ -70,21 +93,22 @@ void move_to_container()
     int speedTowardsY = 300;
     int speedTowardsX = 300;
 		if(!moveToPosition){
-			up_move(level2,1);
+			up_move2(level1);
 			if((TOF_x >= distanceThresholdX)&&(moveToPosition==0)){
 				vx = -speedTowardsX;
 				vy = 0;
 			}else{
 				vx = 0;
 				if(TOF_y<distanceThresholdY_H){
-					vy = speedTowardsY;
+					if(TOF_y>400){
+						vy = speedTowardsY ;
+					}else{
+						vy = speedTowardsY;
+					}
+					
 				}else{
 					vy = 0;
-					if(met == 0){
-						N_flag = 1;
-						met = 1;
-					}
-					if(jeston_flag == 5)moveToPosition = 1;
+					if(jeston_flag == 5 && up_done_flag == 1)moveToPosition = 1;
 				}
 			}
 		}
@@ -95,19 +119,31 @@ void move_to_container()
 			  vy = 0;
 			}else{
 			if(turn_ward == 0){
-				vy = -speedTowardsY * (1 - 2*half_move);
+				if(up_done_flag == 1){
+					vy = -speedTowardsY * (1 - 2*half_move);
+				}else{
+					vy = 0;
+					up_move2(level[waiting_up]);
+				}
 				if(TOF_y<= distanceThresholdY_L){
 					waiting_up++;
 					turn_ward = 1;
+					up_done_flag = 0;
 				}
 			}else{
-				vy = speedTowardsY * (1 - 2*half_move);
+				if(up_done_flag == 1){
+					vy = speedTowardsY * (1 - 2*half_move);
+				}else{
+					vy = 0;
+					up_move2(level[waiting_up]);
+				}
 				if(TOF_y>= distanceThresholdY_H){
 						waiting_up++;
 						turn_ward = 0;
+					  up_done_flag = 0;
 					}
 				}
-				if(waiting_up == 2&& half_move==0)moveToPosition = 2;
+				if(waiting_up == 4&& half_move==0)moveToPosition = 2;
 				if(waiting_up == 3&& half_move==1)moveToPosition = 4;
 			}
     }else if(moveToPosition == 2){
@@ -144,7 +180,8 @@ void move_to_container()
 				if(rolling_flag == 0){	
 					go_to_roll = 0;
 					if(walling_start == 1){
-						if(TOF_x>900){
+						up_move2(level1);
+						if(TOF_x>700){
 							vx = -speedTowardsX;
 						}else{
 							vx = 0;
@@ -161,28 +198,69 @@ void move_to_container()
 				}
 		}
 }
-uint8 up_done_flag = 0;
-void up_move(uint16 high,uint16 direction){ 
-	if(direction == 1){
-			if(high < distance){
-				CAN_cmd_up(0x01, 0x01, 0x20, 0x00, 0x00, 0x01, 0x00);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
-				up_done_flag = 0;
-			}else{
-				CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00);//p2 0x01 DOWN Ox00 UP
-				up_done_flag = 1;
+
+//void up_move(int level,uint16 direction){ 
+//	static int high = 0;
+//	if(level1 == 1){
+//		high = level1;
+//	}else if(level == 2){
+//		high = level2;
+//	}else if(level == 3){
+//		high = level3;
+//	}
+//	if(direction == 1){
+//			if(distance>high){
+//				CAN_cmd_up(0x01, 0x01, 0x20, 0x00, 0x00, 0x01, 0x00);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
+//				up_done_flag = 0;
+//			}else{
+//				CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00);//p2 0x01 DOWN Ox00 UP
+//				up_done_flag = 1;
+//			}
+//	}else{
+//			if(distance<high){
+//				CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x01, 0x00);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
+//				up_done_flag = 0;
+//			}else{
+//				CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00);//p2 0x01 DOWN Ox00 UP
+//				up_done_flag = 1;
+//			}
+//	}	
+//	if(last_up_done_flag != up_done_flag && up_done_flag == 1){
+//		if(high == level1){
+//			HAL_UART_Transmit(&huart7, (uint8_t *)"AN1B", strlen("AN1B"), 999);
+//		}else if(high == level2){
+//			HAL_UART_Transmit(&huart7, (uint8_t *)"AN2B", strlen("AN2B"), 999);			
+//		}else if(high == level3){
+//			HAL_UART_Transmit(&huart7, (uint8_t *)"AN3B", strlen("AN3B"), 999);			
+//		}
+//		last_up_done_flag = up_done_flag;
+//	}
+//}
+void up_move2(int high){
+		if(distance>high+10){
+			CAN_cmd_up(0x01, 0x01, 0x20, 0x00, 0x00, 0x01, 0x00);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
+			up_done_flag = 0;
+		}else if(distance<high-10){
+			CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x01, 0x00);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
+			up_done_flag = 0;
+		}else{
+			CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00);//p2 0x01 DOWN Ox00 UP
+			up_done_flag = 1;
+		}
+		if(test_flag!= 0){
+			if(last_up_done_flag != up_done_flag && up_done_flag == 1){
+				if(high == level1){
+					HAL_UART_Transmit(&huart7, (uint8_t *)"AP1B", strlen("AP1B"), 999);
+				}else if(high == level2){
+					HAL_UART_Transmit(&huart7, (uint8_t *)"AP2B", strlen("AP2B"), 999);			
+				}else if(high == level3){
+					HAL_UART_Transmit(&huart7, (uint8_t *)"AP3B", strlen("AP3B"), 999);			
+				}
+				last_up_done_flag = up_done_flag;
 			}
-	}else{
-			if(high > distance){
-				CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x01, 0x00);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
-				up_done_flag = 0;
-			}else{
-				CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00);//p2 0x01 DOWN Ox00 UP
-				up_done_flag = 1;
-			}
-	}
+		}
+
 }
-
-
 
 void move_to_search()
 {

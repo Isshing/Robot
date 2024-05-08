@@ -218,15 +218,6 @@ void StartDefaultTask(void const * argument)
 					crmm = 3;
 				}
 			}
-			if(N_flag == 1){
-				if(crmm>0){
-					HAL_UART_Transmit(&huart6, (uint8_t *)"ANB", strlen("ANB"), 999);
-					crmm--;
-				}else{
-					N_flag = 0;
-					crmm = 3;
-				}
-			}	
 			if(last_jetson_data[0]!=jetson_data[0]&& last_jetson_data[1]!=jetson_data[1]){
 				last_jetson_data[0] = jetson_data[0];
 				last_jetson_data[1] = jetson_data[1];
@@ -310,6 +301,7 @@ void Move_control_task(void const * argument)
 			}
 			if(test_flag == 0){
 				move_to_desk();
+				if(initial_flag == 1)up_move2(level2);
 			}else if(test_flag == 1){
 				move_to_container();
 			}
