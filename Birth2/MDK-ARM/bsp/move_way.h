@@ -9,14 +9,14 @@
 
 #define sg_down 1
 #define sg_up 0
-#define level1 40
-#define level2 240
-#define level3 900
-
-void up_move2(int high);
+#define level1 17
+#define level2 245
+#define level3 400
+void tof_mvoe2(int tof_dis,int target_dis,int speed_dis,int tof_number);
 void move_to_desk(void);
 void move_to_container(void);
-//void up_move(int ,uint16);
-
+void move_to_desk2(void);
+void move_to_container2(void);
+void up_move(int high,int lop);
 #endif
 

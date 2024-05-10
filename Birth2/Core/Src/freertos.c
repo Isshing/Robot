@@ -78,6 +78,7 @@ extern int CR_flag,N_flag;
 int crmm = 3;
 char last_jetson_data[2];
 extern uint16_t distance;
+extern int level[4];
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId PID_ControlHandle;
@@ -191,7 +192,6 @@ void StartDefaultTask(void const * argument)
     //		HAL_UART_Transmit(&huart6, (uint8_t *)buffer8, strlen(buffer8), 999);
     //ANO_sent_data(motor_data_0->speed_rpm, motor_data_1->speed_rpm, motor_data_2->speed_rpm, motor_data_3->speed_rpm, (int16)vw,(int16)heading_deg, set_speed_0, set_speed_1,set_speed_2 , set_speed_3);
 		//ANO_sent_data(mot1`		or_data_0->speed_rpm, set_speed_0,(int16)motor_pid_0.Pout,(int16)gein, (int16)bss,(int16)motor_pid_0.Iout, (int16)motor_pid_0.Ki,(int16)motor_pid_0.Kp ,(int16)motor_pid_0.Pout ,(int16)motor_pid_0.Dout);
-		//ANO_sent_data(motor_data_0->speed_rpm, set_speed_0,(int16)kpdata,(int16)kidata, (int16)kddata,(int16)outdata, 0,0 ,0,0);
 		//ANO_sent_data(motor_data_0->speed_rpm,(int16)set_speed_0, (int16)motor_pid_0.out,(int16)motor_pid_0.Pout, (int16)motor_pid_0.Iout,(int16)motor_pid_0.Dout, (int16)motor_pid_0.error[0],0 ,0,0);
 		//ANO_sent_data((int16)error_tof_y,(int16)heading_deg, (int16)rof_pid.out,(int16)rof_pid.Pout, (int16)rof_pid.Iout,(int16)rof_pid.Dout,(int16)TOF1 ,(int16)TOF4,0,0);
 		//ANO_sent_data((int16)TOF1,(int16)vw, (int16)turning_angle,(int16)comp_angle, (int16)rolling_flag,(int16)vx,(int16)error_tof_x ,0,0,0);
@@ -243,7 +243,7 @@ void PID_Control_Function(void const * argument)
   /* Infinite loop */
   for (;;)
   {
-		if(initial_flag == 1){
+	if(initial_flag == 1){
 			if(stt > 0){
 				HAL_UART_Transmit(&huart7, (uint8_t *)"AGNB", strlen("AGNB"), 999);
 				stt --;
@@ -252,6 +252,7 @@ void PID_Control_Function(void const * argument)
 				vx = 0;
 			  vy = 0;
 			}
+
 			move_solution (vx,vy,vw);
 			PID_calc(&motor_pid_0, motor_data_0->speed_rpm, set_speed_0); 
 			PID_calc(&motor_pid_1, motor_data_1->speed_rpm, set_speed_1); 
@@ -300,12 +301,13 @@ void Move_control_task(void const * argument)
 				}
 			}
 			if(test_flag == 0){
-				move_to_desk();
-				if(initial_flag == 1)up_move2(level2);
+				move_to_desk2();
+				if(initial_flag == 1)up_move(level2,2);
 			}else if(test_flag == 1){
-				move_to_container();
+				move_to_container2();
 			}
-			TTL_Hex2Dec();
+
+		TTL_Hex2Dec();
     osDelay(2);
   }
   /* USER CODE END Move_control_task */
