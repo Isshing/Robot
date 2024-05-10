@@ -73,7 +73,7 @@ const fp32 PID_data_1[8]={2.6f, 0.08f, 1.4f, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_k
 const fp32 PID_data_2[8]={2.6f, 0.08f, 1.4f, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
 const fp32 PID_data_3[8]={2.6f, 0.08f, 1.4f, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
 
-const fp32 PID_data_4[8]={30, 0, 0, 8, 0 , 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
+const fp32 PID_data_4[8]={30, 0.04, 0.2, 8, 0 , 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
 
 
 const fp32 PID_tof_data[8]={2.2f, 0, 0, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
@@ -107,19 +107,27 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+
+
   MX_DMA_Init();
   MX_UART7_Init();
   MX_UART8_Init();
-  MX_USART6_UART_Init();
+
+  //MX_USART6_UART_Init();
   MX_CAN1_Init();
   MX_CAN2_Init();
-  MX_USART2_UART_Init();
-  /* USER CODE BEGIN 2 */
 	USR_UartInit();
 	can_filter_init();
 	initFilters();
+	
+	MX_USART6_UART_Init();
+	MX_USART2_UART_Init();
+  //MX_USART2_UART_Init();
+  /* USER CODE BEGIN 2 */
+
 	HAL_UART_Receive_IT(&huart2, &RxByte, 1);
 	HAL_UART_Receive_IT(&huart6,Uart3_Receive_buf,sizeof(Uart3_Receive_buf));//串口5回调函数执行完毕之后，需要再次开启接收中断等待下一次接收中断的发生
+
 	motor_data_0 = get_chassis_motor_measure_point(0); 
 	motor_data_1 = get_chassis_motor_measure_point(1); 
 	motor_data_2 = get_chassis_motor_measure_point(2); 
@@ -128,8 +136,10 @@ int main(void)
 	PID_init(&motor_pid_1,PID_POSITION,PID_data_1,3000,3000); 
 	PID_init(&motor_pid_2,PID_POSITION,PID_data_2,3000,3000); 
 	PID_init(&motor_pid_3,PID_POSITION,PID_data_3,3000,3000); 
-  PID_init(&angle_pid,PID_POSITION,PID_data_4,600,600); 
+  PID_init(&angle_pid,PID_POSITION,PID_data_4,1000,1000); 
 	PID_init(&rof_pid,PID_POSITION,PID_tof_data,500,500);
+	HAL_Delay(1000);
+
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */

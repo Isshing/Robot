@@ -252,17 +252,16 @@ void PID_Control_Function(void const * argument)
 				vx = 0;
 			  vy = 0;
 			}
-
 			move_solution (vx,vy,vw);
 			PID_calc(&motor_pid_0, motor_data_0->speed_rpm, set_speed_0); 
 			PID_calc(&motor_pid_1, motor_data_1->speed_rpm, set_speed_1); 
 			PID_calc(&motor_pid_2, motor_data_2->speed_rpm, set_speed_2); 
 			PID_calc(&motor_pid_3, motor_data_3->speed_rpm, set_speed_3); 
-			CAN_cmd_chassis(motor_pid_0.out,motor_pid_1.out, motor_pid_2.out, motor_pid_3.out); 
+			//CAN_cmd_chassis(motor_pid_0.out,motor_pid_1.out, motor_pid_2.out, motor_pid_3.out); 
 			//up_move(40,1);
 		}
     osDelay(2);
-  }
+	}
   /* USER CODE END PID_Control_Function */
 }
 
@@ -280,17 +279,30 @@ void Move_control_task(void const * argument)
   for(;;)
   {
 			if(rolling_flag == 0){
-				if(Fabs(TOF1-TOF4)<256){
+				if(Fabs(TOF1-TOF4)<168){
 					error_tof_y = TOF1-TOF4;
 				}
-				if(Fabs(TOF2-TOF3)<256){
+				if(Fabs(TOF2-TOF3)<168){
 					error_tof_x = TOF2-TOF3;
 				}
-				if(TOF1<= 1050&&go_to_roll == 0){
-					vw = -PID_calc(&rof_pid, error_tof_y, 0);//* (1 - 2*half_move); 
-				}else{
-					vw = -PID_calc(&rof_pid, error_tof_x, 0);//* (1 - 2*half_move); 
-				}
+//				if(go_to_roll == 0){
+//					if(TOF1<= 1050){
+//						vw = -PID_calc(&rof_pid, error_tof_y, 0);//* (1 - 2*half_move); 
+//					}else{
+//						vw = -PID_calc(&rof_pid, error_tof_x, 0);//* (1 - 2*half_move); 
+//					}
+//				}
+				vw = -PID_calc(&rof_pid, error_tof_y, 0);
+				
+//				if(go_to_roll == 0){
+//					if(TOF1<600){
+//						vw = -PID_calc(&rof_pid, error_tof_x, 0);
+//					}else if(TOF1>2100){
+//						vw = -PID_calc(&rof_pid, error_tof_x, 0);
+//					}else{
+//						vw = -PID_calc(&rof_pid, error_tof_y, 0);
+//					}
+//				}
 			}else{
 				turning_angle = initial_angle + 170;
 				comp_angle = (heading_deg<-90)?360 + heading_deg: heading_deg;
@@ -300,13 +312,12 @@ void Move_control_task(void const * argument)
 					rolling_flag = 0;
 				}
 			}
-			if(test_flag == 0){
-				move_to_desk2();
-				if(initial_flag == 1)up_move(level2,2);
-			}else if(test_flag == 1){
-				move_to_container2();
-			}
-
+//			if(test_flag == 0){
+//				move_to_desk2();
+//				if(initial_flag == 1)up_move(level2,2);
+//			}else if(test_flag == 1){
+//				move_to_container2();
+//			}
 		TTL_Hex2Dec();
     osDelay(2);
   }

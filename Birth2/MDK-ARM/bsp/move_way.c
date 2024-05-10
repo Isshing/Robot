@@ -78,7 +78,7 @@ void move_to_desk2()
 			if(TOF_x<distanceThresholdX - 200){
 				tof_mvoe2(TOF_x,distanceThresholdX - 200,speedTowardsX + 300,2);
 			}else if(TOF_x<460){
-				tof_mvoe2(TOF_x,distanceThresholdX - 200,speedTowardsX,2);
+				tof_mvoe2(TOF_x,distanceThresholdX - 200,speedTowardsX+150,2);
 			}
 			else{
 				tof_mvoe2(TOF_x,distanceThresholdX+20,speedTowardsX,2);
@@ -90,7 +90,7 @@ void move_to_desk2()
 			}
 			if (TOF_x >= distanceThresholdX)
 			{
-					moveToPosition = 1; 
+				moveToPosition = 1; 
 			}
     }
     else
@@ -101,7 +101,7 @@ void move_to_desk2()
 					tof_mvoe2(TOF_y,distanceThresholdY - 200,speedTowardsY + 300,1);					
 				}else{
 					vy = speedTowardsY;
-					tof_mvoe2(TOF_y,distanceThresholdY +20,speedTowardsY,1);
+					tof_mvoe2(TOF_y,distanceThresholdY + 20,speedTowardsY,1);
 				}
         if (TOF_y >= distanceThresholdY)
         {
@@ -110,6 +110,7 @@ void move_to_desk2()
 					vw = 0;
 					if(met == 0){
 						CR_flag = 1;
+						HAL_UART_Transmit(&huart7, (uint8_t *)"AFMB", strlen("AFMB"), 999);
 						met = 1;
 					}
 					up_done_flag = 0;
@@ -121,21 +122,23 @@ int turn_ward = 0;
 int waiting_up = 0;
 int waiting_counter = 0;
 int vv = 0;
+int p4 = 0;
+int rr = 0;
 void move_to_container2()
 {
-	  level[0] = 0;
+	  level[0] = 17;
 		level[1] = level1;
 		level[2] = level2;
 		level[3] = level3;
     static bool_t moveToPosition = 0;
-    int distanceThresholdY_H = 1700; 
-		int distanceThresholdY_L = 630; 
-    int distanceThresholdX = 280;
+    int distanceThresholdY_H = 2060; 
+		int distanceThresholdY_L = 580; 
+    int distanceThresholdX = 270;
     int speedTowardsY = 300;
     int speedTowardsX = 300;
 		if(!moveToPosition){
 			up_move(level1,1);
-			if(TOF_x >= distanceThresholdX){
+			if(TOF_x >= distanceThresholdX&&TOF_y<1780){
 				tof_mvoe2(TOF_x,distanceThresholdX,speedTowardsX,2);
 				vy = 0;
 			}else{
@@ -159,11 +162,23 @@ void move_to_container2()
 			if(jeston_flag == 2){//jeston command to "Stop"
 				vx = 0;
 			  vy = 0;
+				if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);
 			}else{
+				if(TOF2<400&&TOF3<400){
+					tof_mvoe2(TOF2,distanceThresholdX,speedTowardsX,2);
+				}else{
+					if(TOF2>=400&&TOF3<400){
+						tof_mvoe2(TOF3,distanceThresholdX,speedTowardsX,3);
+					}else if(TOF3>=400&&TOF2<400){
+						tof_mvoe2(TOF2,distanceThresholdX,speedTowardsX,2);
+					}else{
+						vx = 0;
+					}
+				}
 				vv = 0;
 			if(turn_ward == 0){
 				if(up_done_flag == 1){
-					vy = -speedTowardsY * (1 - 2*half_move);
+					vy = -speedTowardsY;// * (1 - 2*half_move);
 				}else{
 					vy = 0;
 					if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);
@@ -178,8 +193,16 @@ void move_to_container2()
 					up_done_flag = 0;
 				}
 			}else{
+				if(waiting_up == 3){
+						if(p4 == 0){
+							HAL_UART_Transmit(&huart7, (uint8_t *)"ASGB", strlen("ASGB"), 999);
+							HAL_UART_Transmit(&huart7, (uint8_t *)"AP4B", strlen("AP4B"), 999);
+							p4 = 1;
+							up_done_flag = 1;
+						}	
+				}
 				if(up_done_flag == 1){
-					vy = speedTowardsY * (1 - 2*half_move);
+					vy = speedTowardsY;// * (1 - 2*half_move);
 				}else{
 					vy = 0;
 					if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);
@@ -210,38 +233,26 @@ void move_to_container2()
 					rolling_flag = 1;
 					half_move = 1;
 				}
-//			}else if(moveToPosition == 3){
-//				if(rolling_flag == 0){
-//					go_to_roll = 0;
-//					vx = -speedTowardsX;
-//					vy = 0;
-//					if(TOF2<870){
-//						moveToPosition = 1;
-//					}
-//				}
-//			}else if(moveToPosition == 4){//ending
-//				if(TOF_x>= 2200){
-//					if(TOF_y<= 500){
-//						vx = 0;
-//						vy = 0;
-//						vw = 0;
-//					}else{
-//						vx = -speedTowardsX;
-//						vy = 0;
-//					}
-			}else if(moveToPosition == 3){//ending
+
+			}else if(moveToPosition == 3){
+				up_move(level1,1);
 				if(rolling_flag == 0){	
 					go_to_roll = 0;
 					if(walling_start == 1){
-						up_move(level1,1);
-						if(TOF_x>700){
-							vx = -speedTowardsX;
+						if(TOF_x>860){
+							tof_mvoe2(TOF_x,370,-speedTowardsX,2);
 						}else{
+							if(rr == 0){
+								HAL_UART_Transmit(&huart7, (uint8_t *)"ARRB", strlen("ARRB"), 999);
+								rr = 1;
+							}
 							vx = 0;
+							waiting_up = 0;
+							turn_ward = 1;
 							moveToPosition = 1;
 						}
 					}else{
-						if(TOF_y>300){
+						if(TOF_y>350){
 							vy = -speedTowardsY;
 						}else{
 							vy = 0;
@@ -249,5 +260,15 @@ void move_to_container2()
 						}
 					}
 				}
-		}
+		}else if(moveToPosition == 4){//ending
+				if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);
+				if(TOF_x<330){
+						vx = 0;
+						vy = 0;
+						vw = 0;
+					}else{
+						tof_mvoe2(TOF_x,distanceThresholdX+20,speedTowardsX,2);
+						vy = 0;
+					}
+			}
 }
