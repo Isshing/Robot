@@ -28,13 +28,15 @@ Project File Date:  05/08/2024
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Keil\core\ARM\ARMCC\Bin'
 Build target 'Birth2'
 compiling freertos.c...
-../Core/Src/freertos.c(274): warning:  #177-D: variable "tof_x"  was declared but never referenced
-  		int tof_x = (TOF2+TOF3)/2;
-../Core/Src/freertos.c: 1 warning, 0 errors
+../Core/Src/freertos.c(276): warning:  #177-D: variable "tof_x"  was declared but never referenced
+  		 int tof_x = (TOF2+TOF3)/2;
+../Core/Src/freertos.c(277): warning:  #177-D: variable "tof_y"  was declared but never referenced
+  		 int tof_y = (TOF1+TOF4)/2;
+../Core/Src/freertos.c: 2 warnings, 0 errors
 linking...
-Program Size: Code=23660 RO-data=1004 RW-data=336 ZI-data=19552  
+Program Size: Code=23516 RO-data=1004 RW-data=388 ZI-data=19556  
 FromELF: creating hex file...
-"Birth2\Birth2.axf" - 0 Error(s), 1 Warning(s).
+"Birth2\Birth2.axf" - 0 Error(s), 2 Warning(s).
 
 <h2>Software Packages used:</h2>
 

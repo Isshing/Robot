@@ -79,6 +79,7 @@ int crmm = 3;
 char last_jetson_data[2];
 extern uint16_t distance;
 extern int level[4];
+extern pid_type_def angle_pid,rof_pid;	
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId PID_ControlHandle;
@@ -188,7 +189,8 @@ void StartDefaultTask(void const * argument)
 		//ANO_sent_data(mot1`		or_data_0->speed_rpm, set_speed_0,(int16)motor_pid_0.Pout,(int16)gein, (int16)bss,(int16)motor_pid_0.Iout, (int16)motor_pid_0.Ki,(int16)motor_pid_0.Kp ,(int16)motor_pid_0.Pout ,(int16)motor_pid_0.Dout);
 		//ANO_sent_data(motor_data_0->speed_rpm,(int16)set_speed_0, (int16)motor_pid_0.out,(int16)motor_pid_0.Pout, (int16)motor_pid_0.Iout,(int16)motor_pid_0.Dout, (int16)motor_pid_0.error[0],0 ,0,0);
 		//ANO_sent_data((int16)error_tof_y,(int16)heading_deg, (int16)rof_pid.out,(int16)rof_pid.Pout, (int16)rof_pid.Iout,(int16)rof_pid.Dout,(int16)TOF1 ,(int16)TOF4,0,0);
-		ANO_sent_data((int16)TOF2,(int16)vw, (int16)vx,(int16)motor_pid_0.Pout, (int16)motor_pid_0.Iout,(int16)motor_data_0->speed_rpm,(int16)set_speed_0 ,0,0,0);
+		//ANO_sent_data((int16)TOF2,(int16)vw, (int16)vx,(int16)motor_pid_0.Pout, (int16)motor_pid_0.Iout,(int16)motor_data_0->speed_rpm,(int16)set_speed_0 ,0,0,0);
+		//ANO_sent_data((int16)TOF1,(int16)(TOF1-TOF4), (int16)TOF3,(int16)vw, (int16)motor_data_0->speed_rpm,(int16)set_speed_0, 0,0,0,0);
 //			jetson_data[0] = uart7Rx[1];
 //			jetson_data[1] = uart7Rx[2];
 //			if(jetson_data[0] == 'J' && jetson_data[1] == 'K'){
@@ -271,33 +273,29 @@ void Move_control_task(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-		int tof_x = (TOF2+TOF3)/2;
+		 int tof_x = (TOF2+TOF3)/2;
+		 int tof_y = (TOF1+TOF4)/2;
 			if(rolling_flag == 0){
-//				if(Fabs(TOF1-TOF4)<168){
+			//	if(Fabs(TOF1-TOF4)<168){
 				error_tof_y = TOF1-TOF4;
-//				}
-//				if(Fabs(TOF2-TOF3)<168){
+			//}
+			//if(Fabs(TOF2-TOF3)<168){
 				error_tof_x = TOF2-TOF3;
 				
-//				}
-//				if(go_to_roll == 0){
-//					if(TOF1<= 1050){
+			//}
+				if(go_to_roll == 0){
+//					if(tof_y<= 1050||){
 //						vw = -PID_calc(&rof_pid, error_tof_y, 0);//* (1 - 2*half_move); 
 //					}else{
 //						vw = -PID_calc(&rof_pid, error_tof_x, 0);//* (1 - 2*half_move); 
 //					}
-//				}
-				//vw = -PID_calc(&rof_pid, error_tof_y, 0);
-				
-//				if(go_to_roll == 0){
-//					if(TOF1<600){
-//						vw = -PID_calc(&rof_pid, error_tof_x, 0);
-//					}else if(TOF1>2100){
-//						vw = -PID_calc(&rof_pid, error_tof_x, 0);
-//					}else{
-//						vw = -PID_calc(&rof_pid, error_tof_y, 0);
+					vw = -PID_calc(&rof_pid, error_tof_y, 0);//* (1 - 2*half_move); 
+//					if(tof_y<400|| (tof_y<1700 &&tof_y>1000)){
+//						vw += -0.5*PID_calc(&rof_pid, error_tof_x, 0);
 //					}
-//				}
+//						
+				}
+				
 			}else{
 				turning_angle = initial_angle + 170;
 				comp_angle = (heading_deg<-90)?360 + heading_deg: heading_deg;
@@ -313,10 +311,8 @@ void Move_control_task(void const * argument)
 //			}else if(test_flag == 1){
 //				move_to_container2();
 //			}
-		//tof_mvoe2(tof_x,300,300,2);
-			vx = 400;
+			up_move(level2,2);
 		TTL_Hex2Dec();
-			CAN_cmd_chassis(400,0,0,0); 
     osDelay(2);
   }
   /* USER CODE END Move_control_task */

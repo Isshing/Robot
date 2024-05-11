@@ -55,20 +55,27 @@ fp32 PID_calc(pid_type_def *pid, fp32 ref, fp32 set)
     pid->set = set;
     pid->fdb = ref;                 //反馈
     pid->error[0] = set - ref; //当前误差
+    float abs_error = fabs(pid->error[0]);
+
+    //判断死区
+//    if (abs_error < 50)
+//    {
+//        pid->error[0] = 0.0f;
+//        abs_error = 0.0f;
+//    }
 
     if (pid->mode == PID_POSITION) //位置式
     {
 				
         pid->Pout = pid->Kp * pid->error[0];
-				if(fabs(pid->error[0])<250){
-					pid->Iout += pid->Ki * pid->error[0];
-				}else{
-					pid->Iout = 0;
-				}
-				pid->Iout += pid->Ki * pid->error[0];
+//				if(fabs(pid->error[0])<250){
+//					pid->Iout += pid->Ki * pid->error[0];
+//				}else{
+//					pid->Iout = 0;
+//				}
 				pid->Dout = pid->Kd * (pid->error[0] - pid->error[1]);
 				LimitMax(pid->Iout,pid->max_iout);
-				
+				pid->out = pid->Pout + pid->Iout + pid->Dout;
 				LimitMax(pid->out,pid->max_out);
     }
     else if (pid->mode == PID_DELTA) //增量式

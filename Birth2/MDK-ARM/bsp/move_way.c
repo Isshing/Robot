@@ -22,6 +22,7 @@ int level[4];
 uint8 up_done_flag = 0;
 uint8 last_up_done_flag = 0;
 int tram = 0;
+extern pid_type_def angle_pid,rof_pid;	
 void up_move(int high,int lop){
 		if(up_done_flag == 0)tram = 1;
 		if(distance>high+7){
@@ -49,42 +50,33 @@ void up_move(int high,int lop){
 }
 void tof_mvoe2(int tof_dis,int target_dis,int speed_dis,int tof_number){
 	if(tof_number == 1 || tof_number == 4){//y
-		if(tof_dis<=target_dis +15 &&tof_dis>=target_dis -15){
-			vy =0;
+		if(tof_dis< target_dis-20){
+			vy =speed_dis* (1 - 2*half_move);
+		}else if(tof_dis >target_dis+20){
+			vy = -speed_dis* (1 - 2*half_move);
 		}else{
-			if(tof_dis<target_dis){
-				vy = speed_dis* (1 - 2*half_move);
-			}else{
-				vy = -speed_dis* (1 - 2*half_move);
-			}
+			vy =0;
 		}
-//		if(tof_dis< target_dis-20){
-//			vy = speed_dis* (1 - 2*half_move);
-//		}else if(tof_dis >target_dis+20){
-//			vy = -speed_dis* (1 - 2*half_move);
-//		}else{
-//			vy =0;
-//		}
 	}else{//x
-		if(tof_dis< target_dis-15){
+		if(tof_dis< target_dis-20){
 			vx =speed_dis* (1 - 2*half_move);
-		}else if(tof_dis >target_dis+15){
+		}else if(tof_dis >target_dis+20){
 			vx = -speed_dis* (1 - 2*half_move);
 		}else{
 			vx =0;
 		}
-
 	}
 }
 void move_to_desk2()
 {
     static bool_t moveToPosition = 0;
-    int distanceThresholdX = 985; 
+    int distanceThresholdX = 970; 
     int distanceThresholdY = 1450;
-    int speedTowardsY = 300;
-    int speedTowardsX = 300;
+    int speedTowardsY = 400;
+    int speedTowardsX = 400;
     if (!moveToPosition)
     {
+			vw = -PID_calc(&rof_pid, TOF1-TOF4, 0);
 			if(TOF_x<distanceThresholdX - 200){
 				tof_mvoe2(TOF_x,distanceThresholdX - 200,speedTowardsX + 300,2);
 			}else if(TOF_x<460){
@@ -136,7 +128,7 @@ int p4 = 0;
 int rr = 0;
 void move_to_container2()
 {
-	  level[0] = 19;
+	  level[0] = 28;
 		level[1] = level1;
 		level[2] = level2;
 		level[3] = level3;
@@ -144,12 +136,12 @@ void move_to_container2()
     int distanceThresholdY_H = 2060; 
 		int distanceThresholdY_L = 580; 
     int distanceThresholdX = 270;
-    int speedTowardsY = 300;
-    int speedTowardsX = 300;
+    int speedTowardsY = 400;
+    int speedTowardsX = 400;
 		if(!moveToPosition){
 			up_move(level1,1);
 			if(TOF_x >= distanceThresholdX&&TOF_y<1780){
-				tof_mvoe2(TOF_x,distanceThresholdX,speedTowardsX,2);
+				tof_mvoe2(TOF_x,distanceThresholdX,450,2);
 				vy = 0;
 			}else{
 				vx = 0;
@@ -175,7 +167,7 @@ void move_to_container2()
 				if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);
 			}else{
 				if(TOF2<400&&TOF3<400){
-					tof_mvoe2(TOF2,distanceThresholdX,speedTowardsX,2);
+					tof_mvoe2(TOF2,distanceThresholdX,280,2);
 				}else{
 					if(TOF2>=400&&TOF3<400){
 						tof_mvoe2(TOF3,distanceThresholdX,speedTowardsX,3);
