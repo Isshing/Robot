@@ -36,7 +36,7 @@ typedef struct
     fp32 Dout;
     fp32 Dbuf[3];  
     fp32 error[3]; 
-
+		fp32 Iout_inc;
 } pid_type_def;
 
 #define SAMPLE_SIZE 10  // 定义样本数组的大小
@@ -71,5 +71,5 @@ extern void PID_clear(pid_type_def *pid);
 
 extern float movingAverageFilter(int motor_index, float new_sample);
 extern void initFilters(void);
-extern MovingAverageFilter_t filters[4];
+extern MovingAverageFilter_t filters[8];
 #endif

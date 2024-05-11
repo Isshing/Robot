@@ -184,47 +184,41 @@ void StartDefaultTask(void const * argument)
 
   for (;;)
   {
-    // char buffer8[32];
-    // char buffer7[32];
-    // sprintf(buffer7, "%lu\r\n", TOF_distance7);
-    // sprintf(buffer8, "%lu\r\n", TOF_distance8);
-    //		HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)"TOFuart8:", (uint16_t)strlen("TOFuart8:"), (uint32_t)999);
-    //		HAL_UART_Transmit(&huart6, (uint8_t *)buffer8, strlen(buffer8), 999);
     //ANO_sent_data(motor_data_0->speed_rpm, motor_data_1->speed_rpm, motor_data_2->speed_rpm, motor_data_3->speed_rpm, (int16)vw,(int16)heading_deg, set_speed_0, set_speed_1,set_speed_2 , set_speed_3);
 		//ANO_sent_data(mot1`		or_data_0->speed_rpm, set_speed_0,(int16)motor_pid_0.Pout,(int16)gein, (int16)bss,(int16)motor_pid_0.Iout, (int16)motor_pid_0.Ki,(int16)motor_pid_0.Kp ,(int16)motor_pid_0.Pout ,(int16)motor_pid_0.Dout);
 		//ANO_sent_data(motor_data_0->speed_rpm,(int16)set_speed_0, (int16)motor_pid_0.out,(int16)motor_pid_0.Pout, (int16)motor_pid_0.Iout,(int16)motor_pid_0.Dout, (int16)motor_pid_0.error[0],0 ,0,0);
 		//ANO_sent_data((int16)error_tof_y,(int16)heading_deg, (int16)rof_pid.out,(int16)rof_pid.Pout, (int16)rof_pid.Iout,(int16)rof_pid.Dout,(int16)TOF1 ,(int16)TOF4,0,0);
-		//ANO_sent_data((int16)TOF1,(int16)vw, (int16)turning_angle,(int16)comp_angle, (int16)rolling_flag,(int16)vx,(int16)error_tof_x ,0,0,0);
-			jetson_data[0] = uart7Rx[1];
-			jetson_data[1] = uart7Rx[2];
-			if(jetson_data[0] == 'J' && jetson_data[1] == 'K'){
-				jeston_flag = 1;
-			}else if(jetson_data[0] == 'S' && jetson_data[1] == 'T'){
-				jeston_flag = 2;
-			}else if(jetson_data[0] == 'R' && jetson_data[1] == 'G'){
-				jeston_flag = 3;
-			}else if(jetson_data[0] == 'C' && jetson_data[1] == 'D'){
-				jeston_flag = 4;
-				test_flag = 1;
-			}else if(jetson_data[0] == 'H' && jetson_data[1] == 'J'){
-				jeston_flag = 5;
-			}
-			if(CR_flag == 1){
-				if(crmm>0){
-					HAL_UART_Transmit(&huart7, (uint8_t *)"AFMB", strlen("AFMB"), 999);
-					crmm--;
-				}else{
-					CR_flag = 0;
-					crmm = 3;
-				}
-			}
-			if(last_jetson_data[0]!=jetson_data[0]&& last_jetson_data[1]!=jetson_data[1]){
-				last_jetson_data[0] = jetson_data[0];
-				last_jetson_data[1] = jetson_data[1];
-				if(jeston_flag != 1){
-					HAL_UART_Transmit(&huart7, (uint8_t *)"AJKB", strlen("AJKB"), 999);
-				}
-			}
+		ANO_sent_data((int16)TOF2,(int16)vw, (int16)vx,(int16)motor_pid_0.Pout, (int16)motor_pid_0.Iout,(int16)motor_data_0->speed_rpm,(int16)set_speed_0 ,0,0,0);
+//			jetson_data[0] = uart7Rx[1];
+//			jetson_data[1] = uart7Rx[2];
+//			if(jetson_data[0] == 'J' && jetson_data[1] == 'K'){
+//				jeston_flag = 1;
+//			}else if(jetson_data[0] == 'S' && jetson_data[1] == 'T'){
+//				jeston_flag = 2;
+//			}else if(jetson_data[0] == 'R' && jetson_data[1] == 'G'){
+//				jeston_flag = 3;
+//			}else if(jetson_data[0] == 'C' && jetson_data[1] == 'D'){
+//				jeston_flag = 4;
+//				test_flag = 1;
+//			}else if(jetson_data[0] == 'H' && jetson_data[1] == 'J'){
+//				jeston_flag = 5;
+//			}
+//			if(CR_flag == 1){
+//				if(crmm>0){
+//					HAL_UART_Transmit(&huart7, (uint8_t *)"AFMB", strlen("AFMB"), 999);
+//					crmm--;
+//				}else{
+//					CR_flag = 0;
+//					crmm = 3;
+//				}
+//			}
+//			if(last_jetson_data[0]!=jetson_data[0]&& last_jetson_data[1]!=jetson_data[1]){
+//				last_jetson_data[0] = jetson_data[0];
+//				last_jetson_data[1] = jetson_data[1];
+//				if(jeston_flag != 1){
+//					HAL_UART_Transmit(&huart7, (uint8_t *)"AJKB", strlen("AJKB"), 999);
+//				}
+//			}
     osDelay(2);
   }
   /* USER CODE END StartDefaultTask */
@@ -244,10 +238,10 @@ void PID_Control_Function(void const * argument)
   for (;;)
   {
 	if(initial_flag == 1){
-			if(stt > 0){
-				HAL_UART_Transmit(&huart7, (uint8_t *)"AGNB", strlen("AGNB"), 999);
-				stt --;
-			}
+//			if(stt > 0){
+//				HAL_UART_Transmit(&huart7, (uint8_t *)"AGNB", strlen("AGNB"), 999);
+//				stt --;
+//			}
 			if(jeston_flag == 2){//jeston command to "Stop"
 				vx = 0;
 			  vy = 0;
@@ -257,8 +251,7 @@ void PID_Control_Function(void const * argument)
 			PID_calc(&motor_pid_1, motor_data_1->speed_rpm, set_speed_1); 
 			PID_calc(&motor_pid_2, motor_data_2->speed_rpm, set_speed_2); 
 			PID_calc(&motor_pid_3, motor_data_3->speed_rpm, set_speed_3); 
-			//CAN_cmd_chassis(motor_pid_0.out,motor_pid_1.out, motor_pid_2.out, motor_pid_3.out); 
-			//up_move(40,1);
+			CAN_cmd_chassis(motor_pid_0.out,motor_pid_1.out, motor_pid_2.out, motor_pid_3.out); 
 		}
     osDelay(2);
 	}
@@ -278,13 +271,15 @@ void Move_control_task(void const * argument)
   /* Infinite loop */
   for(;;)
   {
+		int tof_x = (TOF2+TOF3)/2;
 			if(rolling_flag == 0){
-				if(Fabs(TOF1-TOF4)<168){
-					error_tof_y = TOF1-TOF4;
-				}
-				if(Fabs(TOF2-TOF3)<168){
-					error_tof_x = TOF2-TOF3;
-				}
+//				if(Fabs(TOF1-TOF4)<168){
+				error_tof_y = TOF1-TOF4;
+//				}
+//				if(Fabs(TOF2-TOF3)<168){
+				error_tof_x = TOF2-TOF3;
+				
+//				}
 //				if(go_to_roll == 0){
 //					if(TOF1<= 1050){
 //						vw = -PID_calc(&rof_pid, error_tof_y, 0);//* (1 - 2*half_move); 
@@ -292,7 +287,7 @@ void Move_control_task(void const * argument)
 //						vw = -PID_calc(&rof_pid, error_tof_x, 0);//* (1 - 2*half_move); 
 //					}
 //				}
-				vw = -PID_calc(&rof_pid, error_tof_y, 0);
+				//vw = -PID_calc(&rof_pid, error_tof_y, 0);
 				
 //				if(go_to_roll == 0){
 //					if(TOF1<600){
@@ -318,7 +313,10 @@ void Move_control_task(void const * argument)
 //			}else if(test_flag == 1){
 //				move_to_container2();
 //			}
+		//tof_mvoe2(tof_x,300,300,2);
+			vx = 400;
 		TTL_Hex2Dec();
+			CAN_cmd_chassis(400,0,0,0); 
     osDelay(2);
   }
   /* USER CODE END Move_control_task */

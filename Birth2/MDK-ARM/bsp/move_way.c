@@ -24,10 +24,10 @@ uint8 last_up_done_flag = 0;
 int tram = 0;
 void up_move(int high,int lop){
 		if(up_done_flag == 0)tram = 1;
-		if(distance>high+13){
+		if(distance>high+7){
 			CAN_cmd_up(0x01, 0x01, 0x20, 0x00, 0x00, 0x01, 0x00);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
 			up_done_flag = 0;
-		}else if(distance<high-13){
+		}else if(distance<high-7){
 			CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x01, 0x00);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
 			up_done_flag = 0;
 		}else{
@@ -49,21 +49,31 @@ void up_move(int high,int lop){
 }
 void tof_mvoe2(int tof_dis,int target_dis,int speed_dis,int tof_number){
 	if(tof_number == 1 || tof_number == 4){//y
-		if(tof_dis< target_dis-8){
-			vy = speed_dis* (1 - 2*half_move);
-		}else if(tof_dis >target_dis+8){
-			vy = -speed_dis* (1 - 2*half_move);
-		}else{
+		if(tof_dis<=target_dis +15 &&tof_dis>=target_dis -15){
 			vy =0;
+		}else{
+			if(tof_dis<target_dis){
+				vy = speed_dis* (1 - 2*half_move);
+			}else{
+				vy = -speed_dis* (1 - 2*half_move);
+			}
 		}
+//		if(tof_dis< target_dis-20){
+//			vy = speed_dis* (1 - 2*half_move);
+//		}else if(tof_dis >target_dis+20){
+//			vy = -speed_dis* (1 - 2*half_move);
+//		}else{
+//			vy =0;
+//		}
 	}else{//x
-		if(tof_dis< target_dis-20){
+		if(tof_dis< target_dis-15){
 			vx =speed_dis* (1 - 2*half_move);
-		}else if(tof_dis >target_dis+20){
+		}else if(tof_dis >target_dis+15){
 			vx = -speed_dis* (1 - 2*half_move);
 		}else{
 			vx =0;
 		}
+
 	}
 }
 void move_to_desk2()
@@ -81,7 +91,7 @@ void move_to_desk2()
 				tof_mvoe2(TOF_x,distanceThresholdX - 200,speedTowardsX+150,2);
 			}
 			else{
-				tof_mvoe2(TOF_x,distanceThresholdX+20,speedTowardsX,2);
+				tof_mvoe2(TOF_x,distanceThresholdX,speedTowardsX,2);
 			}
 			if(TOF_x>680){
 				vy = 500;
@@ -101,7 +111,7 @@ void move_to_desk2()
 					tof_mvoe2(TOF_y,distanceThresholdY - 200,speedTowardsY + 300,1);					
 				}else{
 					vy = speedTowardsY;
-					tof_mvoe2(TOF_y,distanceThresholdY + 20,speedTowardsY,1);
+					tof_mvoe2(TOF_y,distanceThresholdY ,speedTowardsY,1);
 				}
         if (TOF_y >= distanceThresholdY)
         {
@@ -126,7 +136,7 @@ int p4 = 0;
 int rr = 0;
 void move_to_container2()
 {
-	  level[0] = 17;
+	  level[0] = 19;
 		level[1] = level1;
 		level[2] = level2;
 		level[3] = level3;

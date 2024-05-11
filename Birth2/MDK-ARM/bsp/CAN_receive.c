@@ -83,6 +83,10 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     TOF2 = (uint16_t)(rx_data[2]<<8 | rx_data[3]);
     TOF3 = (uint16_t)(rx_data[4]<<8 | rx_data[5]);
     TOF4 = (uint16_t)(rx_data[6]<<8 | rx_data[7]);
+		TOF1 = movingAverageFilter(4, TOF1);
+		TOF2 = movingAverageFilter(5, TOF2);
+		TOF3 = movingAverageFilter(6, TOF3);
+		TOF4 = movingAverageFilter(7, TOF4);
     break;
   }
   default:

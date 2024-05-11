@@ -58,16 +58,18 @@ fp32 PID_calc(pid_type_def *pid, fp32 ref, fp32 set)
 
     if (pid->mode == PID_POSITION) //位置式
     {
+				
         pid->Pout = pid->Kp * pid->error[0];
 				if(fabs(pid->error[0])<250){
 					pid->Iout += pid->Ki * pid->error[0];
 				}else{
 					pid->Iout = 0;
 				}
+				pid->Iout += pid->Ki * pid->error[0];
 				pid->Dout = pid->Kd * (pid->error[0] - pid->error[1]);
-				LimitMax(pid->Iout,pid->max_iout)
-        pid->out = pid->Pout + pid->Iout + pid->Dout;
-				LimitMax(pid->out,pid->max_out)
+				LimitMax(pid->Iout,pid->max_iout);
+				
+				LimitMax(pid->out,pid->max_out);
     }
     else if (pid->mode == PID_DELTA) //增量式
     {
@@ -87,6 +89,8 @@ fp32 PID_calc(pid_type_def *pid, fp32 ref, fp32 set)
         pid->out += pid->Pout + pid->Iout;
         LimitMax(pid->out, pid->max_out);
     }
+
+
     return pid->out;
 }
 
@@ -108,11 +112,11 @@ void PID_clear(pid_type_def *pid)
 
 
 
-MovingAverageFilter_t filters[4];  // 为四个电机定义四个滤波器
+MovingAverageFilter_t filters[8];  // 为四个电机定义四个滤波器
 
 // 初始化滤波器
 void initFilters(void) {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 8; i++) {
         filters[i].index = 0;
         for (int j = 0; j < SAMPLE_SIZE; j++) {
             filters[i].samples[j] = 0.0f;

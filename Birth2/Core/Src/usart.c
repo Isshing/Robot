@@ -806,7 +806,7 @@ void ANO_sent_data(int16 A, int16 B, int16 C, int16 D, int16 E, int16 F, int16 G
     data_to_send[_cnt++] = checksum;      //和校验
     data_to_send[_cnt++] = addcheck;      //附加校验
 
-    HAL_UART_Transmit((UART_HandleTypeDef *)&huart6, (uint8_t *)data_to_send, (uint16_t)_cnt, (uint32_t)999);
+    HAL_UART_Transmit((UART_HandleTypeDef *)&huart7, (uint8_t *)data_to_send, (uint16_t)_cnt, (uint32_t)999);
 
 }
 

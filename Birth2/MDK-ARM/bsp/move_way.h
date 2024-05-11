@@ -9,7 +9,7 @@
 
 #define sg_down 1
 #define sg_up 0
-#define level1 17
+#define level1 25
 #define level2 215
 #define level3 505
 void tof_mvoe2(int tof_dis,int target_dis,int speed_dis,int tof_number);

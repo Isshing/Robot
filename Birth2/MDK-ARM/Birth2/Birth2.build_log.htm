@@ -27,11 +27,14 @@ Project File Date:  05/08/2024
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Keil\core\ARM\ARMCC\Bin'
 Build target 'Birth2'
-compiling main.c...
+compiling freertos.c...
+../Core/Src/freertos.c(274): warning:  #177-D: variable "tof_x"  was declared but never referenced
+  		int tof_x = (TOF2+TOF3)/2;
+../Core/Src/freertos.c: 1 warning, 0 errors
 linking...
-Program Size: Code=23196 RO-data=1004 RW-data=396 ZI-data=19356  
+Program Size: Code=23660 RO-data=1004 RW-data=336 ZI-data=19552  
 FromELF: creating hex file...
-"Birth2\Birth2.axf" - 0 Error(s), 0 Warning(s).
+"Birth2\Birth2.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -71,7 +74,7 @@ Package Vendor: Keil
 
    * Component: Keil.ARM Compiler::Compiler:I/O:STDOUT:Breakpoint:1.2.0
       Source file:   Source\retarget_io.c
-Build Time Elapsed:  00:00:04
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>

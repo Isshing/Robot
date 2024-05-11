@@ -68,14 +68,15 @@ pid_type_def angle_pid,rof_pid;
 float set_speed_0,set_speed_1,set_speed_2,set_speed_3 =0;
 extern uint8_t RxByte,Jetson_RxByte;
 extern uint8_t Uart3_Receive_buf[1];   
-const fp32 PID_data_0[8]={2.6f, 0.08f, 1.4f, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
-const fp32 PID_data_1[8]={2.6f, 0.08f, 1.4f, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
-const fp32 PID_data_2[8]={2.6f, 0.08f, 1.4f, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
-const fp32 PID_data_3[8]={2.6f, 0.08f, 1.4f, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
-
-const fp32 PID_data_4[8]={30, 0.04, 0.2, 8, 0 , 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
+const fp32 PID_data_0[8]={2.9f, 0.08f, 1.4f, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
+const fp32 PID_data_1[8]={2.9f, 0.08f, 1.4f, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
+const fp32 PID_data_2[8]={2.9f, 0.08f, 1.4f, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
+const fp32 PID_data_3[8]={2.9f, 0.08f, 1.4f, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
 
 
+const fp32 PID_data_4[8]={30, 0, 0, 8, 0 , 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
+
+//tof
 const fp32 PID_tof_data[8]={2.2f, 0, 0, 3, 0, 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
 /* USER CODE END 0 */
 
@@ -113,7 +114,6 @@ int main(void)
   MX_UART7_Init();
   MX_UART8_Init();
 
-  //MX_USART6_UART_Init();
   MX_CAN1_Init();
   MX_CAN2_Init();
 	USR_UartInit();
@@ -122,7 +122,6 @@ int main(void)
 	
 	MX_USART6_UART_Init();
 	MX_USART2_UART_Init();
-  //MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
 	HAL_UART_Receive_IT(&huart2, &RxByte, 1);
