@@ -84,6 +84,8 @@ extern pid_type_def angle_pid,rof_pid;
 int tof_y = 0;
 int tof_x = 0;
 extern uint16 TOF_value[4];
+extern TIM_HandleTypeDef htim7;
+extern int inital_all_flag;
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId PID_ControlHandle;
@@ -243,7 +245,9 @@ void PID_Control_Function(void const * argument)
   /* Infinite loop */
   for (;;)
   {
-	if(initial_flag == 1){
+		
+		if(initial_flag == 1&&inital_all_flag>=25){
+			HAL_TIM_Base_Stop_IT(&htim7);
 			if(stt > 0){
 				HAL_UART_Transmit(&huart7, (uint8_t *)"AGNB", strlen("AGNB"), 999);
 				stt --;
@@ -286,6 +290,7 @@ void Move_control_task(void const * argument)
 		TOF4 = TOF_value[3];
 		 tof_x = (TOF2+TOF3)/2;
 		 tof_y = (TOF1+TOF4)/2;
+		if(inital_all_flag>=25){
 			if(rolling_flag == 0){
 				error_tof_y = TOF1-TOF4;
 				error_tof_x = TOF2-TOF3;
@@ -307,8 +312,10 @@ void Move_control_task(void const * argument)
 			}else if(test_flag == 1){
 				move_to_container2();
 			}
-//		vx = pid_more(TOF3-270);
-//		up_move(level1,1);
+//			vx = pid_more(TOF3-270);
+//			up_move(level2,2);
+		}
+
 		TTL_Hex2Dec();
     osDelay(2);
   }

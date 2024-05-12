@@ -277,12 +277,12 @@ void move_to_container2()
 				}
 		}else if(moveToPosition == 4){//ending
 				if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);
-				if(TOF_y<330){
+				if(TOF_y>330){
 					vy = pid_more_y(TOF3-320);				
 				}else{
 					vy = 0;
 				}
-				if(TOF3<330){
+				if(TOF3>330){
 					vx = pid_more(TOF3-320);				
 				}else{
 					vx = 0;

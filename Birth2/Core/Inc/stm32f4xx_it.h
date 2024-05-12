@@ -58,6 +58,7 @@ void CAN1_TX_IRQHandler(void);
 void CAN1_RX0_IRQHandler(void);
 void USART2_IRQHandler(void);
 void TIM6_DAC_IRQHandler(void);
+void TIM7_IRQHandler(void);
 void CAN2_TX_IRQHandler(void);
 void CAN2_RX0_IRQHandler(void);
 void USART6_IRQHandler(void);

@@ -21,6 +21,7 @@
 #include "cmsis_os.h"
 #include "can.h"
 #include "dma.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -73,6 +74,7 @@ const fp32 PID_data_1[8]={2.8f, 0.08f, 1.4f, 5, 3, 3, 0.02, 0.02};	//P,I,D,bas_k
 const fp32 PID_data_2[8]={2.8f, 0.08f, 1.4f, 5, 3, 3, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
 const fp32 PID_data_3[8]={2.8f, 0.08f, 1.4f, 5, 3, 3, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
 
+int inital_all_flag = 0;
 
 const fp32 PID_data_4[8]={30, 0, 0, 8, 0 , 0, 0.02, 0.02};	//P,I,D,bas_kp,kp_gain,max_I,cp,ci
 
@@ -122,8 +124,9 @@ int main(void)
 	
 	MX_USART6_UART_Init();
 	MX_USART2_UART_Init();
+  MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
-
+	HAL_TIM_Base_Start_IT(&htim7);
 	HAL_UART_Receive_IT(&huart2, &RxByte, 1);
 	HAL_UART_Receive_IT(&huart6,Uart3_Receive_buf,sizeof(Uart3_Receive_buf));//串口5回调函数执行完毕之后，需要再次开启接收中断等待下一次接收中断的发生
 
@@ -232,7 +235,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
-
+  if (htim->Instance == TIM7) {
+		inital_all_flag += 1;
+  }
   /* USER CODE END Callback 1 */
 }
 

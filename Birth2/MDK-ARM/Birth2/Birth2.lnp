@@ -6,6 +6,7 @@
 "birth2\freertos.o"
 "birth2\can.o"
 "birth2\dma.o"
+"birth2\tim.o"
 "birth2\usart.o"
 "birth2\stm32f4xx_it.o"
 "birth2\stm32f4xx_hal_msp.o"

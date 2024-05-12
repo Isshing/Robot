@@ -48,6 +48,7 @@ birth2\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 birth2\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 birth2\main.o: ../Core/Inc/can.h
 birth2\main.o: ../Core/Inc/dma.h
+birth2\main.o: ../Core/Inc/tim.h
 birth2\main.o: ../Core/Inc/usart.h
 birth2\main.o: ../Core/Inc/gpio.h
 birth2\main.o: ./bsp/CAN_receive.h
