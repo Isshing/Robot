@@ -1,16 +1,6 @@
 #include "pid.h"
 #include <stdio.h>
-#define LimitMax(input, max)   \
-    {                          \
-        if (input > max)       \
-        {                      \
-            input = max;       \
-        }                      \
-        else if (input < -max) \
-        {                      \
-            input = -max;      \
-        }                      \
-    }
+
 /**
   * @brief          pid struct data init
   * @param[out]     pid: PID struct data point
@@ -68,11 +58,11 @@ fp32 PID_calc(pid_type_def *pid, fp32 ref, fp32 set)
     {
 				
         pid->Pout = pid->Kp * pid->error[0];
-//				if(fabs(pid->error[0])<250){
-//					pid->Iout += pid->Ki * pid->error[0];
-//				}else{
-//					pid->Iout = 0;
-//				}
+				if(fabs(pid->error[0])<250){
+					pid->Iout += pid->Ki * pid->error[0];
+				}else{
+					pid->Iout = 0;
+				}
 				pid->Dout = pid->Kd * (pid->error[0] - pid->error[1]);
 				LimitMax(pid->Iout,pid->max_iout);
 				pid->out = pid->Pout + pid->Iout + pid->Dout;

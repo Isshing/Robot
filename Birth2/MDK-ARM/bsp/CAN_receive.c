@@ -41,6 +41,7 @@ uint16 TOF1 = 0;
 uint16 TOF2 = 0;
 uint16 TOF3 = 0;
 uint16 TOF4 = 0;
+uint16 TOF_value[4];
 static CAN_TxHeaderTypeDef chassis_tx_message;
 static uint8_t chassis_can_send_data[8];
 static CAN_TxHeaderTypeDef up_tx_message;
@@ -79,14 +80,24 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   }
   case CAN_TOF_ID:
   {
-    TOF1 = (uint16_t)(rx_data[0]<<8 | rx_data[1]);
-    TOF2 = (uint16_t)(rx_data[2]<<8 | rx_data[3]);
-    TOF3 = (uint16_t)(rx_data[4]<<8 | rx_data[5]);
-    TOF4 = (uint16_t)(rx_data[6]<<8 | rx_data[7]);
-		TOF1 = movingAverageFilter(4, TOF1);
-		TOF2 = movingAverageFilter(5, TOF2);
-		TOF3 = movingAverageFilter(6, TOF3);
-		TOF4 = movingAverageFilter(7, TOF4);
+		
+//    TOF1 = (uint16_t)(rx_data[0]<<8 | rx_data[1]);
+//    TOF2 = (uint16_t)(rx_data[2]<<8 | rx_data[3]);
+//    TOF3 = (uint16_t)(rx_data[4]<<8 | rx_data[5]);
+//    TOF4 = (uint16_t)(rx_data[6]<<8 | rx_data[7]);
+//		TOF1 = movingAverageFilter(4, TOF1);
+//		TOF2 = movingAverageFilter(5, TOF2);
+//		TOF3 = movingAverageFilter(6, TOF3);
+//		TOF4 = movingAverageFilter(7, TOF4);
+		TOF_value[0] = (uint16_t)(rx_data[0]<<8 | rx_data[1]);
+    TOF_value[1] = (uint16_t)(rx_data[2]<<8 | rx_data[3]);
+    TOF_value[2] = (uint16_t)(rx_data[4]<<8 | rx_data[5]);
+    TOF_value[3] = (uint16_t)(rx_data[6]<<8 | rx_data[7]);
+		TOF_value[0] = movingAverageFilter(4, TOF_value[0]);
+		TOF_value[1] = movingAverageFilter(5, TOF_value[1]);
+		TOF_value[2] = movingAverageFilter(6, TOF_value[2]);
+		TOF_value[3] = movingAverageFilter(7, TOF_value[3]);
+		
     break;
   }
   default:

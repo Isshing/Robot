@@ -3,7 +3,17 @@
 
 #include "struct_typedef.h"
 #include "Qmath.h"
-
+#define LimitMax(input, max)   \
+    {                          \
+        if (input > max)       \
+        {                      \
+            input = max;       \
+        }                      \
+        else if (input < -max) \
+        {                      \
+            input = -max;      \
+        }                      \
+    }
 enum PID_MODE
 {
     PID_POSITION = 0,

@@ -1675,6 +1675,16 @@
               <FileType>5</FileType>
               <FilePath>.\bsp\move_way.h</FilePath>
             </File>
+            <File>
+              <FileName>Steering.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\bsp\Steering.c</FilePath>
+            </File>
+            <File>
+              <FileName>Steering.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\bsp\Steering.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

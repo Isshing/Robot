@@ -6,7 +6,7 @@
 #include "CAN_receive.h"
 #include "pid.h"
 #include "IMU.h"
-
+#include "Steering.h"
 #define sg_down 1
 #define sg_up 0
 #define level1 28

@@ -42,3 +42,4 @@ birth2\move_way.o: bsp\pid.h
 birth2\move_way.o: bsp\Qmath.h
 birth2\move_way.o: D:\Keil\core\ARM\ARMCC\Bin\..\include\math.h
 birth2\move_way.o: bsp\IMU.h
+birth2\move_way.o: bsp\Steering.h
