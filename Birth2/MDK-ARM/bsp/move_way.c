@@ -70,8 +70,8 @@ void tof_mvoe2(int tof_dis,int target_dis,int speed_dis,int tof_number){
 void move_to_desk2()
 {
     static bool_t moveToPosition = 0;
-    int distanceThresholdX = 970; 
-    int distanceThresholdY = 1450;
+    int distanceThresholdX = 950; 
+    int distanceThresholdY = 1340;
     int speedTowardsY = 400;
     int speedTowardsX = 400;
     if (!moveToPosition)
@@ -118,7 +118,6 @@ void move_to_desk2()
 					met = 1;
 				}
 				up_done_flag = 0;
-				test_flag = 1;
 			}
     }
 }
@@ -139,7 +138,7 @@ void move_to_container2()
 		int distanceThresholdY_L = 700; 
     int distanceThresholdX = 270;
     int speedTowardsY = 400;
-    int speedTowardsX = 400;
+//    int speedTowardsX = 400;
 		if(!moveToPosition){
 			up_move(level1,1);
 			if(TOF_x >= distanceThresholdX&&TOF_y<1780){

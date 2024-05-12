@@ -287,28 +287,11 @@ void Move_control_task(void const * argument)
 		 tof_x = (TOF2+TOF3)/2;
 		 tof_y = (TOF1+TOF4)/2;
 			if(rolling_flag == 0){
-			//	if(Fabs(TOF1-TOF4)<168){
 				error_tof_y = TOF1-TOF4;
-			//}
-			//if(Fabs(TOF2-TOF3)<168){
 				error_tof_x = TOF2-TOF3;
-				
-			//}
 				if(go_to_roll == 0){
-//					if(tof_y<= 1050||){
-//						vw = -PID_calc(&rof_pid, error_tof_y, 0);//* (1 - 2*half_move); 
-//					}else{
-//						vw = -PID_calc(&rof_pid, error_tof_x, 0);//* (1 - 2*half_move); 
-//					}
-					//vw = -PID_calc(&rof_pid, error_tof_y, 0);//* (1 - 2*half_move); 
-					
-//					if(tof_y<400|| (tof_y<1700 &&tof_y>1000)){
-//						vw += -0.5*PID_calc(&rof_pid, error_tof_x, 0);
-//					}
-//						
 					vw = -pid_more_w(error_tof_y);
 				}
-				
 			}else{
 				turning_angle = initial_angle + 170;
 				comp_angle = (heading_deg<-90)?360 + heading_deg: heading_deg;
@@ -324,6 +307,8 @@ void Move_control_task(void const * argument)
 			}else if(test_flag == 1){
 				move_to_container2();
 			}
+//		vx = pid_more(TOF3-270);
+//		up_move(level1,1);
 		TTL_Hex2Dec();
     osDelay(2);
   }
