@@ -23,6 +23,8 @@ uint8 up_done_flag = 0;
 uint8 last_up_done_flag = 0;
 int tram = 0;
 extern pid_type_def angle_pid,rof_pid;	
+int move_move = 0;
+extern float error_tof_y,error_tof_x;
 void up_move(int high,int lop){
 		if(up_done_flag == 0)tram = 1;
 		if(distance>high+7){
@@ -67,13 +69,14 @@ void tof_mvoe2(int tof_dis,int target_dis,int speed_dis,int tof_number){
 		}
 	}
 }
+
 void move_to_desk2()
 {
     static bool_t moveToPosition = 0;
     int distanceThresholdX = 950; 
     int distanceThresholdY = 1340;
-    int speedTowardsY = 400;
-    int speedTowardsX = 400;
+    int speedTowardsY = 360;
+    int speedTowardsX = 360;
     if (!moveToPosition)
     {
 			vw = -PID_calc(&rof_pid, TOF1-TOF4, 0);
@@ -127,6 +130,8 @@ int waiting_counter = 0;
 int vv = 0;
 int p4 = 0;
 int rr = 0;
+int ending = 0;
+int ee = 0;
 void move_to_container2()
 {
 	  level[0] = 28;
@@ -139,6 +144,7 @@ void move_to_container2()
     int distanceThresholdX = 270;
     int speedTowardsY = 400;
 //    int speedTowardsX = 400;
+		if(jeston_flag == 6)moveToPosition = 4;
 		if(!moveToPosition){
 			up_move(level1,1);
 			if(TOF_x >= distanceThresholdX&&TOF_y<1780){
@@ -163,10 +169,16 @@ void move_to_container2()
 		}
     else if (moveToPosition == 1)
     {			
-			if(jeston_flag == 2){//jeston command to "Stop"
+			
+			if(jeston_flag == 2){
+				move_move = 1;
+			}else if(jeston_flag == 3){
+				move_move = 0;
+			}
+			if(move_move){
 				vx = 0;
 			  vy = 0;
-				if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);
+				if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);				
 			}else{
 				if(TOF2<550||TOF3<550){
 					if(TOF1<1100){
@@ -254,8 +266,8 @@ void move_to_container2()
 							turn_ward = 1;
 							if(TOF1<690){
 								vy = pid_more_y(TOF1-700);	
-								if(TOF2<550||TOF3<550){
-									
+								if(TOF3<550){
+									vx = pid_more(TOF3-distanceThresholdX);
 								}
 							}else{
 									half_move = 1;
@@ -266,7 +278,6 @@ void move_to_container2()
 						}
 					}else{//Ìù½ü
 						if(TOF_y>288){
-							//vy = -speedTowardsY;
 							vx = 0;
 							vy = pid_more_y(TOF1-285);
 						}else{
@@ -276,17 +287,32 @@ void move_to_container2()
 					}
 				}
 		}else if(moveToPosition == 4){//ending
-				if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);
-				if(TOF_y>330){
-					vy = pid_more_y(TOF3-320);				
-				}else{
-					vy = 0;
+				if(ee == 0){
+					HAL_UART_Transmit(&huart7, (uint8_t *)"AENB", strlen("AENB"), 999);
+					ee = 1;
 				}
-				if(TOF3>330){
-					vx = pid_more(TOF3-320);				
+				if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);
+				if(ending == 0){
+					if(TOF1<2052){
+						vy = pid_more_y(TOF1-2055);				
+					}else{
+						vy = 0;
+						ending = 1;
+					}
+				}else if(ending == 1){
+					if(TOF3>330){
+						vw = 0;
+						vy = 0;
+						vx = pid_more(TOF3-320);				
+					}else{
+						ending = 2;
+						vx = 0;
+						vw = -PID_calc(&rof_pid,error_tof_x,0);
+					}
 				}else{
-					vx = 0;
-					vw = 0;
+						vy = 0;
+						vx = 0;
+						vw = 0;
 				}
 			}
 }

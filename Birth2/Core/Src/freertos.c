@@ -210,6 +210,8 @@ void StartDefaultTask(void const * argument)
 				test_flag = 1;
 			}else if(jetson_data[0] == 'H' && jetson_data[1] == 'J'){
 				jeston_flag = 5;
+			}else if(jetson_data[0] == 'B' && jetson_data[1] == 'K'){
+				jeston_flag = 6;
 			}
 			if(CR_flag == 1){
 				if(crmm>0){
@@ -256,10 +258,7 @@ void PID_Control_Function(void const * argument)
 				vx = 0;
 			  vy = 0;
 			}
-			elr = tof_x-600;
-			
 			move_solution (vx,vy,vw);
-			
 			PID_calc(&motor_pid_0, motor_data_0->speed_rpm, set_speed_0); 
 			PID_calc(&motor_pid_1, motor_data_1->speed_rpm, set_speed_1); 
 			PID_calc(&motor_pid_2, motor_data_2->speed_rpm, set_speed_2); 
