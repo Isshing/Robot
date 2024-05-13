@@ -18,5 +18,6 @@ void move_to_container(void);
 void move_to_desk2(void);
 void move_to_container2(void);
 void up_move(int high,int lop);
+void up_move_faster(int high,int lop);
 #endif
 

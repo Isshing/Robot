@@ -50,6 +50,32 @@ void up_move(int high,int lop){
 			}
 		}
 }
+
+void up_move_faster(int high,int lop){
+		if(up_done_flag == 0)tram = 1;
+		if(distance>high+7){
+			CAN_cmd_up(0x01, 0x01, 0x20, 0x00, 0x00, 0x02, 0x55);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
+			up_done_flag = 0;
+		}else if(distance<high-7){
+			CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x02, 0x55);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
+			up_done_flag = 0;
+		}else{
+			CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x02, 0x55);//p2 0x01 DOWN Ox00 UP
+			up_done_flag = 1;
+		}
+		if(up_done_flag == 1&&test_flag!= 0&&tram == 1){
+			if(lop == 1){
+				HAL_UART_Transmit(&huart7, (uint8_t *)"AP1B", strlen("AP1B"), 999);
+				tram = 0;
+			}else if(lop == 2){
+				HAL_UART_Transmit(&huart7, (uint8_t *)"AP2B", strlen("AP2B"), 999);		
+				tram = 0;
+			}else if(lop == 3){
+				HAL_UART_Transmit(&huart7, (uint8_t *)"AP3B", strlen("AP3B"), 999);	
+				tram = 0;
+			}
+		}
+}
 void tof_mvoe2(int tof_dis,int target_dis,int speed_dis,int tof_number){
 	if(tof_number == 1 || tof_number == 4){//y
 		if(tof_dis< target_dis-20){
@@ -142,7 +168,7 @@ void move_to_container2()
     int distanceThresholdY_H = 1780; 
 		int distanceThresholdY_L = 700; 
     int distanceThresholdX = 270;
-    int speedTowardsY = 400;
+    int speedTowardsY = 280;
 //    int speedTowardsX = 400;
 		if(jeston_flag == 6)moveToPosition = 4;
 		if(!moveToPosition){
@@ -154,7 +180,7 @@ void move_to_container2()
 			}else{
 				vx = 0;
 				if(TOF_y<distanceThresholdY_H){
-					tof_mvoe2(TOF_y,distanceThresholdY_H,speedTowardsY,1);
+					tof_mvoe2(TOF_y,distanceThresholdY_H,speedTowardsY+40,1);
 				}else{
 					vy = 0;
 					if(vv == 0){
@@ -178,7 +204,7 @@ void move_to_container2()
 			if(move_move){
 				vx = 0;
 			  vy = 0;
-				if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);				
+				if(waiting_up <3)up_move_faster(level[waiting_up+1],waiting_up+1);				
 			}else{
 				if(TOF2<550||TOF3<550){
 					if(TOF1<1100){
@@ -194,7 +220,7 @@ void move_to_container2()
 					vy = -speedTowardsY;// * (1 - 2*half_move);
 				}else{
 					vy = 0;
-					if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);
+					if(waiting_up <3)up_move_faster(level[waiting_up+1],waiting_up+1);
 				}
 				if(TOF_y< distanceThresholdY_L){
 					waiting_up++;
@@ -218,7 +244,7 @@ void move_to_container2()
 					vy = speedTowardsY;// * (1 - 2*half_move);
 				}else{
 					vy = 0;
-					if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);
+					if(waiting_up <3)up_move_faster(level[waiting_up+1],waiting_up+1);
 				}
 				if(TOF_y> distanceThresholdY_H){
 						waiting_up++;
@@ -248,7 +274,7 @@ void move_to_container2()
 				}
 
 			}else if(moveToPosition == 3){
-				up_move(level1,1);
+				up_move_faster(level1,1);
 				if(rolling_flag == 0){	
 					go_to_roll = 0;
 					if(walling_start == 1){
@@ -291,7 +317,7 @@ void move_to_container2()
 					HAL_UART_Transmit(&huart7, (uint8_t *)"AENB", strlen("AENB"), 999);
 					ee = 1;
 				}
-				if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);
+				if(waiting_up <3)up_move_faster(level[waiting_up+1],waiting_up+1);
 				if(ending == 0){
 					if(TOF1<2052){
 						vy = pid_more_y(TOF1-2055);				

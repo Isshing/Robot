@@ -248,7 +248,7 @@ void PID_Control_Function(void const * argument)
   for (;;)
   {
 		
-		if(initial_flag == 1&&inital_all_flag>=25){
+		if(initial_flag == 1){//&&inital_all_flag>=25
 			HAL_TIM_Base_Stop_IT(&htim7);
 			if(stt > 0){
 				HAL_UART_Transmit(&huart7, (uint8_t *)"AGNB", strlen("AGNB"), 999);
@@ -311,8 +311,6 @@ void Move_control_task(void const * argument)
 			}else if(test_flag == 1){
 				move_to_container2();
 			}
-//			vx = pid_more(TOF3-270);
-//			up_move(level2,2);
 		}
 
 		TTL_Hex2Dec();
