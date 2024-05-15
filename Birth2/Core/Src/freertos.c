@@ -79,7 +79,7 @@ extern int CR_flag,N_flag;
 int crmm = 3;
 char last_jetson_data[2];
 extern uint16_t distance;
-extern int level[4];
+extern int level[5];
 extern pid_type_def angle_pid,rof_pid;	
 int tof_y = 0;
 int tof_x = 0;
@@ -94,7 +94,7 @@ osThreadId Move_controlHandle;
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 
-
+extern uint8 up_done_flag;
 void move_solution(float vx, float vy, float vw){
   static float rotate_ratio_f = 1.;
   static float wheel_rpm_ratio = 1.;
@@ -248,7 +248,7 @@ void PID_Control_Function(void const * argument)
   for (;;)
   {
 		
-		if(initial_flag == 1){//&&inital_all_flag>=25
+		if(initial_flag == 1&&inital_all_flag>=25){//
 			HAL_TIM_Base_Stop_IT(&htim7);
 			if(stt > 0){
 				HAL_UART_Transmit(&huart7, (uint8_t *)"AGNB", strlen("AGNB"), 999);
@@ -312,7 +312,6 @@ void Move_control_task(void const * argument)
 				move_to_container2();
 			}
 		}
-
 		TTL_Hex2Dec();
     osDelay(2);
   }
