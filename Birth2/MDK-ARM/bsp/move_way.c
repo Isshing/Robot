@@ -28,10 +28,10 @@ extern float error_tof_y,error_tof_x;
 void up_move(int high,int lop){
 		if(up_done_flag == 0)tram = 1;
 		if(distance>high+5){
-			CAN_cmd_up(0x01, 0x01, 0x20, 0x00, 0x00, 0x01, 0x90);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
+			CAN_cmd_up(0x01, 0x01, 0x20, 0x00, 0x00, 0x01, 0x95);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
 			up_done_flag = 0;
 		}else if(distance<high-5){
-			CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x01, 0x90);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
+			CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x01, 0x95);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
 			up_done_flag = 0;
 		}else{
 			CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00);//p2 0x01 DOWN Ox00 UP
@@ -142,7 +142,7 @@ void move_to_container2()
     static bool_t moveToPosition = 0;
     int distanceThresholdY_H = 1780; 
 		int distanceThresholdY_L = 690; 
-    int distanceThresholdX = 285;
+    int distanceThresholdX = 320;
 		int dis1 = 340;
     int speedTowardsY = 280;
 		if(jeston_flag == 6)moveToPosition = 4;
@@ -356,8 +356,8 @@ void move_to_container2()
 					if(ending == 0){
 						if(TOF1>430){
 							vy = pid_more_y(TOF1-320) - 400;				
-						}else if(TOF1>320){
-							vy = pid_more_y(TOF1-320);
+						}else if(TOF1>290){
+							vy = pid_more_y(TOF1-285);
 						}else{
 							vy = 0;
 							ending = 1;

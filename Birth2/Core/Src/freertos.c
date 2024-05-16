@@ -87,6 +87,9 @@ extern uint16 TOF_value[4];
 extern TIM_HandleTypeDef htim7;
 extern int inital_all_flag;
 extern int ending;
+int temp = 0;
+int temp2 = 0;
+int jk_flag = 0;
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId PID_ControlHandle;
@@ -198,8 +201,16 @@ void StartDefaultTask(void const * argument)
 		//ANO_sent_data((int16)vx,(int16)(TOF3-270), (int16)(TOF2-270),(int16)TOF1, 850,0,0 ,0,0,0);
 		//ANO_sent_data((int16)TOF2,(int16)vw, (int16)vx,(int16)motor_pid_0.Pout, (int16)motor_pid_0.Iout,(int16)motor_data_0->speed_rpm,(int16)set_speed_0 ,0,0,0);
 		//ANO_sent_data((int16)TOF1,(int16)(TOF1-TOF4), (int16)TOF3,(int16)vw, (int16)motor_data_0->speed_rpm,(int16)set_speed_0, 0,0,0,0);
-			jetson_data[0] = uart7Rx[1];
-			jetson_data[1] = uart7Rx[2];
+			for(int i = 0;i<4;i++){
+				if(uart7Rx[i] == 'A'){
+					temp = i + 1;
+					if(temp>=4)temp-=4;
+					jetson_data[0] = uart7Rx[temp];
+					temp2 = i + 2;
+					if(temp2>=4)temp2-=4;
+					jetson_data[1] = uart7Rx[temp2];
+				}
+			}
 			if(jetson_data[0] == 'J' && jetson_data[1] == 'K'){
 				jeston_flag = 1;
 			}else if(jetson_data[0] == 'S' && jetson_data[1] == 'T'){
@@ -226,11 +237,13 @@ void StartDefaultTask(void const * argument)
 			if(last_jetson_data[0]!=jetson_data[0]&& last_jetson_data[1]!=jetson_data[1]){
 				last_jetson_data[0] = jetson_data[0];
 				last_jetson_data[1] = jetson_data[1];
-				if(jeston_flag != 1){
+				jk_flag = 3;
+			}				
+			if(jeston_flag != 1 && jk_flag>0){
 					HAL_UART_Transmit(&huart7, (uint8_t *)"AJKB", strlen("AJKB"), 999);
-				}
+					jk_flag --;
 			}
-    osDelay(2);
+    osDelay(5);
   }
   /* USER CODE END StartDefaultTask */
 }
@@ -313,8 +326,7 @@ void Move_control_task(void const * argument)
 				move_to_container2();
 			}
 		}
-//		vx = pid_more(TOF3-235);
-//		up_move(level3,3);
+
 		TTL_Hex2Dec();
     osDelay(2);
   }
