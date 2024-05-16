@@ -86,6 +86,7 @@ int tof_x = 0;
 extern uint16 TOF_value[4];
 extern TIM_HandleTypeDef htim7;
 extern int inital_all_flag;
+extern int ending;
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId PID_ControlHandle;
@@ -291,9 +292,9 @@ void Move_control_task(void const * argument)
 		 tof_y = (TOF1+TOF4)/2;
 		if(inital_all_flag>=25){
 			if(rolling_flag == 0){
-				error_tof_y = TOF1-TOF4;
+				error_tof_y = TOF1-TOF4; 
 				error_tof_x = TOF2-TOF3;
-				if(go_to_roll == 0){
+				if(go_to_roll == 0 &&(ending == 0)){
 					vw = -pid_more_w(error_tof_y);
 				}
 			}else{
@@ -312,6 +313,8 @@ void Move_control_task(void const * argument)
 				move_to_container2();
 			}
 		}
+//		vx = pid_more(TOF3-235);
+//		up_move(level3,3);
 		TTL_Hex2Dec();
     osDelay(2);
   }

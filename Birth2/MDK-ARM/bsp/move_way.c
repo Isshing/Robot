@@ -27,33 +27,11 @@ int move_move = 0;
 extern float error_tof_y,error_tof_x;
 void up_move(int high,int lop){
 		if(up_done_flag == 0)tram = 1;
-		if(distance>high+7){
-			CAN_cmd_up(0x01, 0x01, 0x20, 0x00, 0x00, 0x01, 0x80);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
+		if(distance>high+5){
+			CAN_cmd_up(0x01, 0x01, 0x20, 0x00, 0x00, 0x01, 0x90);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
 			up_done_flag = 0;
-		}else if(distance<high-7){
-			CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x01, 0x80);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
-			up_done_flag = 0;
-		}else{
-			CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00);//p2 0x01 DOWN Ox00 UP
-			up_done_flag = 1;
-		}
-		if(up_done_flag == 1&&test_flag!= 0&&tram == 1){ 
-			if(lop == 2){
-				HAL_UART_Transmit(&huart7, (uint8_t *)"AP2B", strlen("AP2B"), 999);		
-				tram = 0;
-			}else if(lop == 3){
-				HAL_UART_Transmit(&huart7, (uint8_t *)"AP3B", strlen("AP3B"), 999);	
-				tram = 0;
-			}
-		}
-}
-void up_move_slow(int high,int lop){
-		if(up_done_flag == 0)tram = 1;
-		if(distance>high+7){
-			CAN_cmd_up(0x01, 0x01, 0x20, 0x00, 0x00, 0x01, 0x05);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
-			up_done_flag = 0;
-		}else if(distance<high-7){
-			CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x01, 0x05);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
+		}else if(distance<high-5){
+			CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x01, 0x90);//p2 0x01 DOWN Ox00 UP   //32-25.9-32  2000
 			up_done_flag = 0;
 		}else{
 			CAN_cmd_up(0x01, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00);//p2 0x01 DOWN Ox00 UP
@@ -69,6 +47,7 @@ void up_move_slow(int high,int lop){
 			}
 		}
 }
+
 void tof_mvoe2(int tof_dis,int target_dis,int speed_dis,int tof_number){
 	if(tof_number == 1 || tof_number == 4){//y
 		if(tof_dis< target_dis-20){
@@ -96,6 +75,7 @@ void move_to_desk2()
     int distanceThresholdY = 1340;
     int speedTowardsY = 360;
     int speedTowardsX = 360;
+
     if (!moveToPosition)
     {
 			if(TOF_x<distanceThresholdX - 200){
@@ -147,24 +127,27 @@ int p4 = 0;
 int rr = 0;
 int ending = 0;
 int ee = 0;
+int sss = 0;
 void move_to_container2()
 {
-	  level[0] = level1;
+	  sss = waiting_up+2+3*half_move;
+		level[0] = level1;
 		level[1] = level1;
 		level[2] = level2;
 		level[3] = level3;
 		level[4] = level3;
-		level[5] = level3;//第二货柜3
-		level[6] = level2;//第一货柜2
-		level[7] = level1;//第二货柜1
+		level[5] = level_tow_3;//第二货柜3
+		level[6] = level_tow_2;//第一货柜2
+		level[7] = level_tow_1;//第二货柜1
     static bool_t moveToPosition = 0;
     int distanceThresholdY_H = 1780; 
-		int distanceThresholdY_L = 700; 
+		int distanceThresholdY_L = 690; 
     int distanceThresholdX = 285;
+		int dis1 = 340;
     int speedTowardsY = 280;
 		if(jeston_flag == 6)moveToPosition = 4;
 		if(!moveToPosition){
-			up_move_slow(level1,1);
+			up_move(level1,1);
 			if(TOF_y <= distanceThresholdY_H){
 				vx = 0;
 				tof_mvoe2(TOF_y,distanceThresholdY_H+10,speedTowardsY+90,1);
@@ -199,24 +182,30 @@ void move_to_container2()
 				if(half_move == 0){
 					if(waiting_up <3&&waiting_up >=0)up_move(level[waiting_up+1],waiting_up+1);
 				}else{
-					if(waiting_up <3&&waiting_up >=0)up_move(level[3-waiting_up],3-waiting_up);
+					//if(waiting_up <3&&waiting_up >=0)up_move(level[3-waiting_up],3-waiting_up);
+					if(waiting_up <3)up_move(level[sss],3-waiting_up);
 				}
 				//up_move(level[waiting_up+1],waiting_up+1);					
 			}else{
 				if(TOF2<550||TOF3<550){
 					if(TOF1<1100){
 						if(waiting_up == 3&&half_move == 1){
-							vx = pid_more(TOF3-(distanceThresholdX+55));
+							vx = pid_more(TOF3-(dis1));
 						}else if(waiting_up == 0&&half_move == 0){
-							vx = pid_more(TOF3-(distanceThresholdX+55));
+							vx = pid_more(TOF3-(dis1));
+						}else if(waiting_up == 3&&half_move == 0){
+							vx = pid_more(TOF3-235);
 						}else{
 							vx = pid_more(TOF3-distanceThresholdX);
 						}
+							
 					}else{
 						if(waiting_up == 3&&half_move == 1){
-							vx = pid_more(TOF2-(distanceThresholdX+55));
+							vx = pid_more(TOF2-(dis1));
 						}else if(waiting_up == 0&&half_move == 0){
-							vx = pid_more(TOF2-(distanceThresholdX+55));
+							vx = pid_more(TOF2-(dis1));
+						}else if(waiting_up == 3&&half_move == 0){
+							vx = pid_more(TOF2-235);
 						}else{
 							vx = pid_more(TOF2-distanceThresholdX);
 						}
@@ -233,7 +222,7 @@ void move_to_container2()
 					if(half_move == 0){
 						if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);
 					}else{  
-						if(waiting_up <3)up_move(level[waiting_up+2+3*half_move],waiting_up+2+3*half_move);
+						if(waiting_up <3)up_move(level[sss],3-waiting_up);
 					}
 				}
 				if(TOF_y< distanceThresholdY_L){
@@ -261,7 +250,7 @@ void move_to_container2()
 					if(half_move == 0){
 						if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);
 					}else{
-						if(waiting_up <3)up_move(level[waiting_up+2+3*half_move],waiting_up+2+3*half_move);
+						if(waiting_up <3)up_move(level[sss],waiting_up+2+3*half_move);
 					}
 					//up_move(level[waiting_up+1],waiting_up+1);
 				}
@@ -291,15 +280,15 @@ void move_to_container2()
 					rolling_flag = 1;
 				}
 			}else if(moveToPosition == 3){
-				up_move(level3,3);
+				up_move(level_tow_3,3);
 				if(rolling_flag == 0){	
 					go_to_roll = 0;
 					if(walling_start == 1){
-						if(TOF3>1400){
-							vx = pid_more(TOF3-845)-600;
+						if(TOF3>1550){
+							vx = pid_more(TOF3-890)-650;
 							vy = pid_more_y(TOF1-285);
-						}else if(TOF3>880){
-							vx = pid_more(TOF3-870)-320;
+						}else if(TOF3>855){
+							vx = pid_more(TOF3-890)-380;
 							vy = pid_more_y(TOF1-285);
 						}else{
 							if(rr == 0){
@@ -310,10 +299,7 @@ void move_to_container2()
 							waiting_up = 0;
 							turn_ward = 1;
 							if(TOF1<680){
-								vy = pid_more_y(TOF1-690);	
-								if(TOF3<550){
-									vx = pid_more(TOF3-(distanceThresholdX+55));
-								}
+								vy = pid_more_y(TOF1-685);	
 							}else{
 								vy = 0;
 								half_move = 1;
@@ -339,21 +325,23 @@ void move_to_container2()
 				if(half_move == 0){
 					if(waiting_up <3&&waiting_up >=0)up_move(level[waiting_up+1],waiting_up+1);
 				}else{
-					if(waiting_up <3&&waiting_up >=0)up_move(level[waiting_up+2+3*half_move],waiting_up+2+3*half_move);
+					if(waiting_up <3&&waiting_up >=0)up_move(level[sss],3-waiting_up);
 				}
 				if(half_move == 1){//第二个货柜离开
 					if(ending == 0){
-						if(TOF1<2052){
+						if(TOF1<1850){
+							vy = pid_more_y(TOF1-2055)+300;				
+						}else if(TOF1<2052){
 							vy = pid_more_y(TOF1-2055);				
 						}else{
 							vy = 0;
 							ending = 1;
 						}
 					}else if(ending == 1){
-						if(TOF3>285){
-							vw = 0;
+						if(TOF3>240){
 							vy = 0;
-							vx = pid_more(TOF3-280);				
+							vx = pid_more(TOF3-238);		
+							vw = -PID_calc(&rof_pid,error_tof_x,0);							
 						}else{
 							ending = 2;
 							vx = 0;
@@ -377,7 +365,8 @@ void move_to_container2()
 					}else if(ending == 1){
 						if(TOF3<2580){
 							vy = 0;
-							vx = pid_more(TOF3-2720)+400;				
+							vx = pid_more(TOF3-2720)+400;			
+							vw = -pid_more_w(error_tof_y);
 						}else if(TOF3<2790){
 							vy = 0;
 							vx = pid_more(TOF3-2820);
