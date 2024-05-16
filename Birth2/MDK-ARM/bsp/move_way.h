@@ -9,10 +9,10 @@
 #include "Steering.h"
 #define sg_down 1
 #define sg_up 0
-#define level1 40
-#define level2 215
-#define level3 505
-#define level4 535
+#define level1 48
+#define level2 245
+#define level3 535
+#define level4 550
 void tof_mvoe2(int tof_dis,int target_dis,int speed_dis,int tof_number);
 void move_to_desk(void);
 void move_to_container(void);
