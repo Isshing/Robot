@@ -71,8 +71,8 @@ void tof_mvoe2(int tof_dis,int target_dis,int speed_dis,int tof_number){
 void move_to_desk2()
 {
     static bool_t moveToPosition = 0;
-    int distanceThresholdX = 950; 
-    int distanceThresholdY = 1340;
+    int distanceThresholdX = 950;   //靠左距离        位置1
+    int distanceThresholdY = 1340;  //向前到OCR距离   位置2
     int speedTowardsY = 360;
     int speedTowardsX = 360;
 
@@ -132,16 +132,16 @@ void move_to_container2()
 {
 	  sss = waiting_up+2+3*half_move;
 		level[0] = level1;
-		level[1] = level1;
-		level[2] = level2;
-		level[3] = level3;
-		level[4] = level3;
+		level[1] = level1; //第一层
+		level[2] = level2; //第二层
+		level[3] = level3; //第三层
+		level[4] = level3; //第四层
 		level[5] = level_tow_3;//第二货柜3
 		level[6] = level_tow_2;//第一货柜2
 		level[7] = level_tow_1;//第二货柜1
     static bool_t moveToPosition = 0;
-    int distanceThresholdY_H = 1780; 
-		int distanceThresholdY_L = 690; 
+    int distanceThresholdY_H = 1780; //货柜最远距离
+		int distanceThresholdY_L = 690;  //货柜最近距离
     int distanceThresholdX = 320;
 		int dis1 = 340;
     int speedTowardsY = 280;
@@ -182,10 +182,10 @@ void move_to_container2()
 				if(half_move == 0){
 					if(waiting_up <3&&waiting_up >=0)up_move(level[waiting_up+1],waiting_up+1);
 				}else{
-					//if(waiting_up <3&&waiting_up >=0)up_move(level[3-waiting_up],3-waiting_up);
+					
 					if(waiting_up <3)up_move(level[sss],3-waiting_up);
 				}
-				//up_move(level[waiting_up+1],waiting_up+1);					
+								
 			}else{
 				if(TOF2<550||TOF3<550){
 					if(TOF1<1100){
@@ -214,11 +214,10 @@ void move_to_container2()
 				vv = 0;
 			if(turn_ward == 0){
 				if(up_done_flag == 1){
-					vy = -speedTowardsY;// * (1 - 2*half_move);
+					vy = -speedTowardsY;
 				}else{
 					vy = 0;
-					//if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);
-					//up_move(level[waiting_up+1],waiting_up+1);
+
 					if(half_move == 0){
 						if(waiting_up <3)up_move(level[waiting_up+1],waiting_up+1);
 					}else{  
@@ -244,7 +243,7 @@ void move_to_container2()
 						}	
 				}
 				if(up_done_flag == 1){
-					vy = speedTowardsY;// * (1 - 2*half_move);
+					vy = speedTowardsY;
 				}else{
 					vy = 0;
 					if(half_move == 0){
@@ -252,7 +251,7 @@ void move_to_container2()
 					}else{
 						if(waiting_up <3)up_move(level[sss],waiting_up+2+3*half_move);
 					}
-					//up_move(level[waiting_up+1],waiting_up+1);
+					
 				}
 				if(TOF_y> distanceThresholdY_H){
 						waiting_up++;
@@ -269,8 +268,8 @@ void move_to_container2()
 				}
 				if(waiting_up == 3&& half_move==1)moveToPosition = 4;
 			}
-    }else if(moveToPosition == 2){
-				if(TOF1<= 1980){
+    }else if(moveToPosition == 2){ //旋转前
+				if(TOF1<= 1980){ 
 					go_to_roll = 1;
 				}else{
 					vx = 0;
@@ -283,11 +282,11 @@ void move_to_container2()
 				up_move(level_tow_3,3);
 				if(rolling_flag == 0){	
 					go_to_roll = 0;
-					if(walling_start == 1){
+					if(walling_start == 1){ //开始沿墙走
 						if(TOF3>1550){
 							vx = pid_more(TOF3-890)-650;
 							vy = pid_more_y(TOF1-285);
-						}else if(TOF3>855){
+						}else if(TOF3>855){  //到达右货柜位置
 							vx = pid_more(TOF3-890)-380;
 							vy = pid_more_y(TOF1-285);
 						}else{
@@ -298,7 +297,7 @@ void move_to_container2()
 							vx = 0;
 							waiting_up = 0;
 							turn_ward = 1;
-							if(TOF1<680){
+							if(TOF1<680){   //让tof贴上货柜
 								vy = pid_more_y(TOF1-685);	
 							}else{
 								vy = 0;
@@ -306,7 +305,7 @@ void move_to_container2()
 								moveToPosition = 1;
 							}
 						}
-					}else{//贴近
+					}else{//旋转前贴近
 						if(TOF_y>288){
 							vx = 0;
 							vy = pid_more_y(TOF1-285);
@@ -321,7 +320,6 @@ void move_to_container2()
 					HAL_UART_Transmit(&huart7, (uint8_t *)"AENB", strlen("AENB"), 999);
 					ee = 1;
 				}
-				//if(waiting_up <3)up_move(level[waiting_up*(1-half_move)*+1+2*half_move],waiting_up+1);
 				if(half_move == 0){
 					if(waiting_up <3&&waiting_up >=0)up_move(level[waiting_up+1],waiting_up+1);
 				}else{
