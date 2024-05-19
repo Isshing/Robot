@@ -321,12 +321,15 @@ void Move_control_task(void const * argument)
 			}
 			if(test_flag == 0){
 				move_to_desk2();
-				if(initial_flag == 1)up_move(level2,2);
+				if(initial_flag == 1)up_move(245,2);
 			}else if(test_flag == 1){
 				move_to_container2();
 			}
+			
 		}
-
+//		if(inital_all_flag>=10){
+//				up_move(level1,1);
+//		}
 		TTL_Hex2Dec();
     osDelay(2);
   }
